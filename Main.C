@@ -1,6 +1,6 @@
 /*
-Name: Semilore Kayode
-B00863886
+ Name: Semilore Kayode
+ B00863886
  Purpose: Creating a loader for the pipelined XM23. This is the Main file.
 */
 #include "Loader.h"

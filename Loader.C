@@ -1,8 +1,8 @@
 /*
-Name: Semilore Kayode
-B00863886
-Purpose: Creating a loader for the pipelined XM23. This is the Implementation file.
-Note: unsigned variables are used to ensure proper handling of binary values
+ Name: Semilore Kayode
+ B00863886
+ Purpose: Creating a loader for the pipelined XM23. This is the Implementation file.
+ Note: unsigned variables are used to ensure proper handling of binary values
 */
 #include "Loader.h"
 
