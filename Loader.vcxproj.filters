@@ -18,8 +18,16 @@
     <ClCompile Include="Main.C">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Loader.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="PART1_abdulla.xme" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Loader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
