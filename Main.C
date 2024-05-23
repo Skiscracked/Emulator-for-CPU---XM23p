@@ -5,9 +5,10 @@ B00863886
 */
 #include "Loader.h"
 
+starting_address = 0; //initializing the external variable from my header file, ensuring the PC(program counter is initialized)
 
 int main() {
-    starting_address = 0; //initializing the external variable from my header file, ensuring the PC(program counter is initialized)
+    
     char option;
     char filename[100];
 
