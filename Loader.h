@@ -15,6 +15,7 @@
 
 //Memory size
 #define MEM_SIZE 65536
+#define ARRAY_LIMIT 100
 
 //Memory arrays
 unsigned char IMEM[MEM_SIZE];
@@ -40,3 +41,5 @@ void load_file();
 void list_options();
 void Display_IMEM();
 void Display_DMEM();
+unsigned int calculateChecksum(char* S_record);
+int verifyChecksum(char* S_record);

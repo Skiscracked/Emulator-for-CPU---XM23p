@@ -7,13 +7,20 @@
 #include "Loader.h"
 
 void Access_record(FILE* file) {
-    char S_record[100];
+    char S_record[ARRAY_LIMIT];
     while (fgets(S_record, sizeof(S_record), file)) {
         Parse_record(S_record);
     }
 }
 
 void Parse_record(char* S_record) {
+
+    if (!verifyChecksum(S_record)) //first check if the checksum from the record and calculated checksum values are in correspondence
+    {
+        printf("Checksum error in record: %s\n", S_record);
+        return;
+    }
+
     char type[3];
     strncpy(type, S_record, 2);
     type[2] = '\0';
@@ -31,7 +38,7 @@ void Parse_record(char* S_record) {
 }
 
 void Process_header(char* S_record) {
-    char header[100];
+    char header[ARRAY_LIMIT];
     sscanf(S_record + 4, "%s", header); //Knowing the header is located after the first 4 characters
     printf("Header processed: %s\n", header);
 }
@@ -191,3 +198,36 @@ void Display_DMEM() {
         printf("\n");
     }
 }
+
+unsigned int calculateChecksum(char* S_record) {
+    unsigned int sum = 0;
+    unsigned int byte;
+    int len = strlen(S_record);
+
+    //Sum all bytes from the length field to the byte before the checksum
+    for (int i = 2; i < len - 3; i += 2) {//It had to be -3 because fgets adds a LF
+        sscanf(S_record + i, "%2x", &byte);
+        sum += byte;
+    }
+
+    //One's complement of the sum
+    unsigned int checksum = (~sum) & 0xFF; //Invert all bits
+    return checksum;
+}
+
+
+int verifyChecksum(char* S_record) {
+    unsigned int recordChecksum;
+    unsigned int calculatedChecksum;
+
+    //Extract the checksum byte from the S-record
+    sscanf(S_record + strlen(S_record) - 3, "%2x", &recordChecksum);//It had to be -3 because fgets adds a LF
+
+    //Calculate the checksum based on the rest of the S-record
+    calculatedChecksum = calculateChecksum(S_record);
+
+    //Verify if the calculated checksum matches the extracted checksum
+    return recordChecksum == calculatedChecksum;
+}
+
+

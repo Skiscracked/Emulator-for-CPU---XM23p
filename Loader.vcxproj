@@ -133,6 +133,12 @@
   <ItemGroup>
     <ClInclude Include="Loader.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Addition.xme" />
+    <None Include="ArrayInit.xme" />
+    <None Include="Skslab1.xme" />
+    <None Include="Test.xme" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
