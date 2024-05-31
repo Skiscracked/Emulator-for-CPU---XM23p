@@ -6,6 +6,7 @@
 #include "Loader.h"
 
 starting_address = 0; //initializing the external variable from my header file, ensuring the PC(program counter is initialized)
+IMEM_SA = 0; //Initializing the variable.
 
 int main() {
     
@@ -28,6 +29,7 @@ int main() {
         printf("\n? - lists the options (below)\n");
         printf("L - load\n");
         printf("M - display mem\n");
+        printf("P - print instructions\n");
         printf("X - exit\n");
         printf("Option: ");
         scanf(" %c", &option);
@@ -41,6 +43,9 @@ int main() {
             break;
         case 'M':
             Display_records();
+            break;
+        case 'P':
+            decode_and_display(IMEM_SA);
             break;
         case 'X':
             printf("Exiting...\n");

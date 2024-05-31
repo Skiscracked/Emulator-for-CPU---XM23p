@@ -24,6 +24,15 @@ unsigned char DMEM[MEM_SIZE];
 //Program Counter
 extern unsigned int starting_address;
 
+//IMEM starting address (from S-recs)
+extern unsigned int IMEM_SA;
+
+//Declaring an instruction
+typedef struct {
+    unsigned char opcode;
+    unsigned int address;
+} Instruction;
+
 //Function declarations
 void Access_record(FILE* file); //Function to open the S-record file
 void Parse_record(char* S_record); //Function that parses the record, determining which is S0|S1|S2|S9
@@ -43,3 +52,8 @@ void Display_IMEM();
 void Display_DMEM();
 unsigned int calculateChecksum(char* S_record);
 int verifyChecksum(char* S_record);
+void decode_and_display(unsigned int SA);
+void handle_group_40(Instruction instr);
+void handle_group_4C(Instruction instr, unsigned int addy);
+void handle_group_132(Instruction instr, unsigned int addy);
+void handle_group_9A4(Instruction instr, unsigned int addy);
