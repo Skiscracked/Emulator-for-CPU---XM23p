@@ -244,6 +244,12 @@ void decode_and_display(unsigned int SA)//this function is getting the starting 
     Instruction command = fetch(SA);
     if (((command.opcode >> 8) & 0xF0) == 0x40)//if it falls between the 0x40(0100 0000) range call this function
         handle_group_40(command);//calling the function passing command, so the starting address of the IMEM can be obtained by handle_group_40
+    else if (((command.opcode >> 8) & 0xFF) == 0x4C)
+        handle_group_4C(command);
+    else if (((command.opcode >> 3) & 0xFF0) == 0x9A4)
+        handle_group_9A4(command);
+    else if (((command.opcode >> 3) & 0xFFF0) == 0x9A0)
+        handle_group_132(command);
 }//handle the next edgecases for the other opcodes.
 
 void handle_group_40(Instruction instr) //addy in this case is going to be the content of the PC.
@@ -292,8 +298,10 @@ void handle_group_40(Instruction instr) //addy in this case is going to be the c
 
 }
 
-void handle_group_4C(Instruction instr, unsigned int addy)
+void handle_group_4C(Instruction instr)
 {
+    unsigned int addy;
+    addy = instr.address;
     switch ((instr.opcode >> 7) & 0x03)//Shifting and masking 
     {
     case 0x00:
@@ -305,8 +313,10 @@ void handle_group_4C(Instruction instr, unsigned int addy)
     }
 }
 
-void handle_group_132(Instruction instr, unsigned int addy)
+void handle_group_132(Instruction instr)
 {
+    unsigned int addy;
+    addy = instr.address;
     switch ((instr.opcode >> 3) & 0x01)
     {
     case 0x00:
@@ -318,8 +328,10 @@ void handle_group_132(Instruction instr, unsigned int addy)
     }
 }
 
-void handle_group_9A4(Instruction instr, unsigned int addy)
+void handle_group_9A4(Instruction instr)
 {
+    unsigned int addy;
+    addy = instr.address;
     switch ((instr.opcode >> 3) & 0x000F)
     {
     case 0x03:
