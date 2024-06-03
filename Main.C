@@ -5,8 +5,9 @@
 */
 #include "Loader.h"
 
-starting_address = 0; //initializing the external variable from my header file, ensuring the PC(program counter is initialized)
-IMEM_SA = 0; //Initializing the variable.
+starting_address = 0; // Initializing the external variable from my header file, ensuring the PC(program counter is initialized)
+IMEM_SA = 0; // Initializing IMEM_SA to 0 before using it
+PC = 0; // Initializing PC to 0
 
 int main() {
     

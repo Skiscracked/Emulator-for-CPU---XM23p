@@ -239,21 +239,33 @@ Instruction fetch(unsigned int pc) {
     return instr;
 }
 
-void decode_and_display(unsigned int SA)//this function is getting the starting address of the IMEM array, to be able to print instructions from that spot
+void decode_and_display(unsigned int SA)// This function is getting the starting address of the IMEM array, to be able to print instructions from that spot
 {
-    Instruction command = fetch(SA);
-    if (((command.opcode >> 8) & 0xF0) == 0x40)//if it falls between the 0x40(0100 0000) range call this function
-        handle_group_40(command);//calling the function passing command, so the starting address of the IMEM can be obtained by handle_group_40
-    else if (((command.opcode >> 8) & 0xFF) == 0x4C)
-        handle_group_4C(command);
-    else if (((command.opcode >> 3) & 0xFF0) == 0x9A4)
-        handle_group_9A4(command);
-    else if (((command.opcode >> 3) & 0xFFF0) == 0x9A0)
-        handle_group_132(command);
-    else if (((command.opcode >> 11) & 0x0C) == 0x0C)
-        handle_group_MOV(command);
-    else if (command.opcode == 0x0000) 
-        printf("Program is now ending\n");
+    PC = SA; // Giving the PC the starting address of the IMEM
+    
+    while (1)
+    {
+        Instruction command = fetch(PC);
+        if (((command.opcode >> 8) & 0xF0) == 0x40)// If it falls between the 0x40(0100 0000) range call this function
+            handle_group_40(command);// Calling the function passing command, so the starting address of the IMEM can be obtained by handle_group_40
+        else if (((command.opcode >> 8) & 0xFF) == 0x4C)
+            handle_group_4C(command);
+        else if (((command.opcode >> 3) & 0xFF0) == 0x9A4)
+            handle_group_9A4(command);
+        else if (((command.opcode >> 3) & 0xFFF0) == 0x9A0)
+            handle_group_132(command);
+        else if (((command.opcode >> 11) & 0x0C) == 0x0C)
+            handle_group_MOV(command);
+        else if (command.opcode == 0x0000) 
+        {
+            printf("Program is now ending\n");
+            break;
+        }
+        else
+            printf("%04X: %04X\n", command.address, command.opcode);// Upon if the instruction is unidentified
+
+        PC += 2;// Increment PC by a byte pair
+    }
     //Done:
     // I need to format this to print out the required output.
     // I also need to print out the other bits i.e. the constant, the destination etc.
@@ -269,7 +281,7 @@ void handle_group_40(Instruction instr) //addy in this case is going to be the c
     switch ((instr.opcode >> 8) & 0x000F)  // Masking to get the relevant bits (getting the lower 4 bits of the first 8 bit from the 16 bits) 
     {
     case 0x00: //ADD opcode
-        printf("%04X: ADD\n", addy);// ADD Instruction
+        printf("%04X: ADD", addy);// ADD Instruction
         display_content(instr);
         break;
     case 0x01:
@@ -387,35 +399,35 @@ void handle_group_MOV(Instruction instr)
 {
     unsigned int addy;
     addy = instr.address;
-    //Instruction temp;
+    Instruction temp = instr;
     switch ((instr.opcode >> 11) & 0x0F)
     {
     case 0x0C:
-        extract_data_and_dest(instr);
-        printf("%04X: MOVL DST.Low: %d DST: %d", addy, instr.data, instr.dest);
+        extract_data_and_dest(&temp);
+        printf("%04X: MOVL DST.Low: %x DST: R%x\n", addy, temp.data, temp.dest);
         break;
     case 0x0D:
-        extract_data_and_dest(instr);
-        printf("%04X: MOVLZ DST.Low: %d DST: %d", addy, instr.data, instr.dest);
+        extract_data_and_dest(&temp);
+        printf("%04X: MOVLZ DST.Low: %x DST: R%x\n", addy, temp.data, temp.dest);
         break;
     case 0x0E:
-        extract_data_and_dest(instr);
-        printf("%04X: MOVLS DST.Low: %d DST: %d", addy, instr.data, instr.dest);
+        extract_data_and_dest(&temp);
+        printf("%04X: MOVLS DST.Low: %x DST: R%x\n", addy, temp.data, temp.dest);
         break;
     case 0x0F:
-        extract_data_and_dest(instr);
-        printf("%04X: MOVL DST.High: %d DST: %d", addy, instr.data, instr.dest);
+        extract_data_and_dest(&temp);
+        printf("%04X: MOVL DST.High: %x DST: R%x\n", addy, temp.data, temp.dest);
         break;
     default:
-        printf("%04X: %04X\n", addy, instr.opcode);// Upon if the instruction is unidentified
+        printf("%04X: %04X\n", addy, temp.opcode);// Upon if the instruction is unidentified
         break;
     }
 }
 
-void extract_data_and_dest(Instruction instr_handler)
+void extract_data_and_dest(Instruction *instr_handler)
 {
-    instr_handler.dest = (instr_handler.opcode & 0x07);
-    instr_handler.data = ((instr_handler.opcode >> 3) & 0xFF);
+    instr_handler->dest = (instr_handler->opcode & 0x07);
+    instr_handler->data = ((instr_handler->opcode >> 3) & 0xFF);
 }
 
 void display_content(Instruction content)

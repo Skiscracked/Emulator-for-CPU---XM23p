@@ -21,10 +21,13 @@
 unsigned char IMEM[MEM_SIZE];
 unsigned char DMEM[MEM_SIZE];
 
-//Program Counter
+//Starting address from S9
 extern unsigned int starting_address;
 
-//IMEM starting address (from S-recs)
+//Program Counter
+extern unsigned int PC;
+
+//IMEM starting address (from S1)
 extern unsigned int IMEM_SA;
 
 //Declaring an instruction
@@ -64,4 +67,4 @@ void handle_group_4C(Instruction instr);
 void handle_group_132(Instruction instr);
 void handle_group_9A4(Instruction instr);
 void handle_group_MOV(Instruction instr);
-void extract_data_and_dest(Instruction instr_handler);
+void extract_data_and_dest(Instruction *instr_handler);
