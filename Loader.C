@@ -363,11 +363,11 @@ void handle_group_132(Instruction instr)
     {
     case 0x00:
         printf("%04X: SRA", addy); //SRA Instruction
-        //display_content(instr);
+        display_content_4_SRA_and_RRC(instr);
         break;
     case 0x01:
         printf("%04X: RRC", addy);//RRC Instruction
-        //display_content(instr);
+        display_content_4_SRA_and_RRC(instr);
         break;
     default:
         printf("%04X: %04X\n", addy, instr.opcode);// Upon if the instruction is unidentified
@@ -442,4 +442,14 @@ void display_content(Instruction content)
 
     else 
         printf(" RC: %d WB: %d CON: %d DST: R%d\n", content.r_c, content.w_b, content.s_c, content.dest);
+}
+
+void display_content_4_SRA_and_RRC(Instruction content)
+{
+    content.w_b = ((content.opcode >> 6) & 0x01);
+    content.dest = ((content.opcode) & 0x07);
+
+    while (content.dest <= 7)
+        printf(" WB: %d DST: R%d\n", content.w_b, content.dest);
+
 }

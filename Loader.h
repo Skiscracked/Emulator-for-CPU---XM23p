@@ -62,6 +62,7 @@ unsigned int calculateChecksum(char* S_record);
 int verifyChecksum(char* S_record);
 void decode_and_display(unsigned int SA);
 void display_content(Instruction content);
+void display_content_4_SRA_and_RRC(Instruction content);
 void handle_group_40(Instruction instr);
 void handle_group_4C(Instruction instr);
 void handle_group_132(Instruction instr);
