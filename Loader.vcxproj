@@ -24,6 +24,7 @@
     <ProjectGuid>{e62145f3-aab9-4c47-9afe-6b6cee790f3c}</ProjectGuid>
     <RootNamespace>Loader</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Comp Arch</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -127,10 +128,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Decoder.C" />
     <ClCompile Include="Loader.C" />
     <ClCompile Include="Main.C" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Decoder.h" />
     <ClInclude Include="Loader.h" />
   </ItemGroup>
   <ItemGroup>

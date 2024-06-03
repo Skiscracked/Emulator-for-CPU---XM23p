@@ -6,12 +6,16 @@
  Prepared for: Dr Hughes
  Purpose: Creating a loader for the pipelined XM23. This is the header file.
 */
+#ifndef LOADER_H
+#define LOADER_H
+
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "Decoder.h"
 
 //Memory size
 #define MEM_SIZE 65536
@@ -24,22 +28,7 @@ unsigned char DMEM[MEM_SIZE];
 //Starting address from S9
 extern unsigned int starting_address;
 
-//Program Counter
-extern unsigned int PC;
 
-//IMEM starting address (from S1)
-extern unsigned int IMEM_SA;
-
-//Declaring an instruction
-typedef struct {
-    unsigned int opcode;//holds the binary equivalent of the bytes from the array
-    unsigned int address;
-    unsigned char r_c;
-    unsigned char w_b;
-    unsigned char s_c;
-    unsigned char dest;
-    unsigned int data;
-} Instruction;
 
 //Function declarations
 void Access_record(FILE* file); //Function to open the S-record file
@@ -60,12 +49,6 @@ void Display_IMEM();
 void Display_DMEM();
 unsigned int calculateChecksum(char* S_record);
 int verifyChecksum(char* S_record);
-void decode_and_display(unsigned int SA);
-void display_content(Instruction content);
-void display_content_4_SRA_and_RRC(Instruction content);
-void handle_group_40(Instruction instr);
-void handle_group_4C(Instruction instr);
-void handle_group_132(Instruction instr);
-void handle_group_9A4(Instruction instr);
-void handle_group_MOV(Instruction instr);
-void extract_data_and_dest(Instruction *instr_handler);
+#endif
+
+
