@@ -250,49 +250,74 @@ void decode_and_display(unsigned int SA)//this function is getting the starting 
         handle_group_9A4(command);
     else if (((command.opcode >> 3) & 0xFFF0) == 0x9A0)
         handle_group_132(command);
-}//handle the next edgecases for the other opcodes.
+    else if (((command.opcode >> 11) & 0x0C) == 0x0C)
+        handle_group_MOV(command);
+    else if (command.opcode == 0x0000) 
+        printf("Program is now ending\n");
+    //Done:
+    // I need to format this to print out the required output.
+    // I also need to print out the other bits i.e. the constant, the destination etc.
+    // A default case needs to be added to each switch statement
+    //Need to do:
+    // The second table (the move table) needs to be added
+}
 
 void handle_group_40(Instruction instr) //addy in this case is going to be the content of the PC.
-//The PC is going to hold the next instructions
+// The PC is going to hold the next instructions
 {
     unsigned int addy = instr.address;
-    switch ((instr.opcode >> 8) & 0x000F)  //Masking to get the relevant bits (getting the lower 4 bits of the first 8 bit from the 16 bits) 
+    switch ((instr.opcode >> 8) & 0x000F)  // Masking to get the relevant bits (getting the lower 4 bits of the first 8 bit from the 16 bits) 
     {
     case 0x00: //ADD opcode
-        printf("%04X: ADD\n", addy);//ADD Instruction
+        printf("%04X: ADD\n", addy);// ADD Instruction
+        display_content(instr);
         break;
     case 0x01:
-        printf("%04X: ADDC", addy);//ADDC Instruction
+        printf("%04X: ADDC", addy);// ADDC Instruction
+        display_content(instr);
         break;
     case 0x02:
-        printf("%04X: SUB", addy);//SUB Instruction
+        printf("%04X: SUB", addy);// SUB Instruction
+        display_content(instr);
         break;
     case 0x03:
-        printf("%04X: SUBC", addy);//SUBC Instruction
+        printf("%04X: SUBC", addy);// SUBC Instruction
+        display_content(instr);
         break;
     case 0x04:
-        printf("%04X: DADD", addy);//DADD Instruction
+        printf("%04X: DADD", addy);// DADD Instruction
+        display_content(instr);
         break;
     case 0x05:
-        printf("%04X: CMP", addy);//CMP Instruction
+        printf("%04X: CMP", addy);// CMP Instruction
+        display_content(instr);
         break;
     case 0x06:
-        printf("%04X: XOR", addy);//XOR Instruction
+        printf("%04X: XOR", addy);// XOR Instruction
+        display_content(instr);
         break;
     case 0x07:
-        printf("%04X: AND", addy);//AND Instruction
+        printf("%04X: AND", addy);// AND Instruction
+        display_content(instr);
         break;
     case 0x08:
-        printf("%04X: OR", addy);//OR Instruction
+        printf("%04X: OR", addy);// OR Instruction
+        display_content(instr);
         break;
     case 0x09:
-        printf("%04X: BIT", addy);//BIT Instruction
+        printf("%04X: BIT", addy);// BIT Instruction
+        display_content(instr);
         break;
     case 0x0A:
-        printf("%04X: BIC", addy);//BIC Instruction
+        printf("%04X: BIC", addy);// BIC Instruction
+        display_content(instr);
         break;
     case 0x0B:
-        printf("%04X: BIS", addy);//BIS Instruction
+        printf("%04X: BIS", addy);// BIS Instruction
+        display_content(instr);
+        break;
+    default:
+        printf("%04X: %04X\n", addy, instr.opcode);// Upon if the instruction is unidentified
         break;
     }
 
@@ -306,9 +331,14 @@ void handle_group_4C(Instruction instr)
     {
     case 0x00:
         printf("%04X: MOV", addy); //MOV Instruction
+        display_content(instr);
         break;
     case 0x01:
         printf("%04X: SWAP", addy);//SWAP Instruction
+        display_content(instr);
+        break;
+    default:
+        printf("%04X: %04X\n", addy, instr.opcode);// Upon if the instruction is unidentified
         break;
     }
 }
@@ -321,9 +351,14 @@ void handle_group_132(Instruction instr)
     {
     case 0x00:
         printf("%04X: SRA", addy); //SRA Instruction
+        //display_content(instr);
         break;
     case 0x01:
         printf("%04X: RRC", addy);//RRC Instruction
+        //display_content(instr);
+        break;
+    default:
+        printf("%04X: %04X\n", addy, instr.opcode);// Upon if the instruction is unidentified
         break;
     }
 }
@@ -336,9 +371,63 @@ void handle_group_9A4(Instruction instr)
     {
     case 0x03:
         printf("%04X: SWPB", addy);//SWPB Instruction
+        display_content(instr);
         break;
     case 0x04:
         printf("%04X: SXT", addy);//SXT Instruction
+        display_content(instr);
+        break;
+    default:
+        printf("%04X: %04X\n", addy, instr.opcode);// Upon if the instruction is unidentified
         break;
     }
+}
+
+void handle_group_MOV(Instruction instr)
+{
+    unsigned int addy;
+    addy = instr.address;
+    //Instruction temp;
+    switch ((instr.opcode >> 11) & 0x0F)
+    {
+    case 0x0C:
+        extract_data_and_dest(instr);
+        printf("%04X: MOVL DST.Low: %d DST: %d", addy, instr.data, instr.dest);
+        break;
+    case 0x0D:
+        extract_data_and_dest(instr);
+        printf("%04X: MOVLZ DST.Low: %d DST: %d", addy, instr.data, instr.dest);
+        break;
+    case 0x0E:
+        extract_data_and_dest(instr);
+        printf("%04X: MOVLS DST.Low: %d DST: %d", addy, instr.data, instr.dest);
+        break;
+    case 0x0F:
+        extract_data_and_dest(instr);
+        printf("%04X: MOVL DST.High: %d DST: %d", addy, instr.data, instr.dest);
+        break;
+    default:
+        printf("%04X: %04X\n", addy, instr.opcode);// Upon if the instruction is unidentified
+        break;
+    }
+}
+
+void extract_data_and_dest(Instruction instr_handler)
+{
+    instr_handler.dest = (instr_handler.opcode & 0x07);
+    instr_handler.data = ((instr_handler.opcode >> 3) & 0xFF);
+}
+
+void display_content(Instruction content)
+{
+    content.r_c = ((content.opcode >> 7) & 0x01);
+    content.w_b = ((content.opcode >> 6) & 0x01);
+    content.s_c = ((content.opcode >> 3) & 0x07);
+    content.dest = ((content.opcode) & 0x07);
+
+    if ((content.s_c <= 7) && (content.dest <= 7))
+        printf(" RC: %d WB: %d SRC: R%d DST: R%d\n", content.r_c, content.w_b, content.s_c, content.dest);
+
+    else 
+        printf(" RC: %d WB: %d CON: %d DST: R%d\n", content.r_c, content.w_b, content.s_c, content.dest);
 }
