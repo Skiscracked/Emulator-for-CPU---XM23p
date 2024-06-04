@@ -15,10 +15,10 @@ void decode_and_display(unsigned int SA)// This function is getting the starting
     while (1)
     {
         Instruction command = fetch(PC);
-        if (((command.opcode >> 8) & 0xF0) == 0x40)// If it falls between the 0x40(0100 0000) range call this function
-            handle_group_40(command);// Calling the function passing command, so the starting address of the IMEM can be obtained by handle_group_40
-        else if (((command.opcode >> 8) & 0xFF) == 0x4C)
+        if (((command.opcode >> 8) & 0xFF) == 0x4C)
             handle_group_4C(command);
+        else if (((command.opcode >> 8) & 0xF0) == 0x40)// If it falls between the 0x40(0100 0000) range call this function
+            handle_group_40(command);// Calling the function passing command, so the starting address of the IMEM can be obtained by handle_group_40
         else if (((command.opcode >> 3) & 0xFF0) == 0x9A4)
             handle_group_9A4(command);
         else if (((command.opcode >> 3) & 0xFFF0) == 0x9A0)
