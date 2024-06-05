@@ -46,7 +46,6 @@ void Process_header(char* S_record) {
 void Map_Data_to_IMEM(char* S_record) {
     unsigned int length = extractLength(S_record);//extracting the length from the S-record array
     unsigned int address = extractAddress(S_record);//extracting the address from the S-record array
-    IMEM_SA = address;
     unsigned char data[100];
     extractData(S_record, length, data);//extracting data
     writeDataToMemory(IMEM, address, data, length);//writing all 3 extracts to the IMEM array
@@ -62,6 +61,7 @@ void Map_Data_to_DMEM(char* S_record) {
 
 void Map_starting_address(char* S_record) {
     unsigned int address = extractAddress(S_record);
+    IMEM_SA = address;
     setProgramCounter(address);
 }
 
