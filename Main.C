@@ -58,6 +58,7 @@ int main() {
         default:
             printf("Unknown option. Type '?' for list of options.\n");
             break;
+
         }
     }
 

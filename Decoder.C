@@ -42,6 +42,12 @@ void decode_and_display(unsigned int SA)// This function is getting the starting
             printf("%04X: %04X\n", command.address, command.opcode);// Upon if the instruction is unidentified
 
         PC += 2;// Increment PC by a byte pair
+        
+        if (PC + 2 == breakpoint)//Algorithm to check for breakpoint
+        {
+            printf("Execution has stopped\n");
+            break;
+        }
     }
     //Done:
     // I need to format this to print out the required output.
@@ -318,11 +324,13 @@ void change_memory_value(int type, unsigned short address, unsigned short value)
 {
     if (type == 0) {
         // Instruction memory
-        IMEM[address] = value;
+        IMEM[address] = (value & 0x00FF);
+        IMEM[address + 1] = (value >> 8);
     }
     else if (type == 1) {
         // Data memory
-        DMEM[address] = value;
+        DMEM[address] = (value & 0x00FF);
+        DMEM[address + 1] = (value >> 8);
     }
     else {
         printf("Invalid memory type.\n");
