@@ -24,6 +24,9 @@
     <ClCompile Include="Decoder.C">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Register.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Addition.xme" />

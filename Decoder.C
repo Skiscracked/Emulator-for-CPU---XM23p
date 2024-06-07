@@ -1,5 +1,13 @@
 #include "Loader.h"
 
+// Initializing the reg_file
+unsigned short reg_file[REGCON][REGFILE] = {
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 1, 2, 4, 8, 16, 32, -1}
+};
+//Initializing/Re-declaring the extern variable
+unsigned short breakpoint;
+
 //Function to fetch - obtain and return the instruction
 Instruction fetch(unsigned int pc) {
     Instruction instr;
@@ -236,4 +244,93 @@ void display_content_4_SRA_and_RRC(Instruction content)
     if (content.dest <= 7)
         printf(" WB: %d DST: R%d\n", content.w_b, content.dest);
 
+}
+
+void display_and_process_debug_menu()
+{
+    int choice;
+    int reg, type;
+    unsigned short address, value;
+    
+    while (1)
+    {
+        printf("Debugger Commands:\n");
+        printf("1. Display Register Values\n");
+        printf("2. Change Register Value\n");
+        printf("3. Change Memory Value\n");
+        printf("4. Set Breakpoint\n");
+        printf("5. Previous Menu\n");
+
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+        case 1:
+            display_registers();
+            break;
+        case 2:
+            printf("Enter register number (0-7): ");
+            scanf("%d", &reg);
+            printf("Enter new value (hex): ");
+            scanf("%hx", &value);
+            change_register_value(reg, value);
+            break;
+        case 3:
+            printf("Enter memory type (0 for instruction, 1 for data): ");
+            scanf("%d", &type);
+            printf("Enter address (hex): ");
+            scanf("%hx", &address);
+            printf("Enter new value (hex): ");
+            scanf("%hx", &value);
+            change_memory_value(type, address, value);
+            break;
+        case 4:
+            printf("Enter breakpoint address (hex): ");
+            scanf("%hx", &address);
+            set_breakpoint(address);
+            break;
+        case 5:
+            return;
+
+        default:
+            printf("Invalid choice.\n");
+        }
+    }
+}
+
+void display_registers() 
+{
+    for (int i = 0; i < REGFILE; i++) 
+        printf("R%d: 0x%04X\n", i, reg_file[0][i]);
+}
+
+void change_register_value(int reg, unsigned short value)
+{
+    if (reg >= 0 && reg < REGFILE) {
+        reg_file[0][reg] = value;
+    }
+    else {
+        printf("Invalid register number.\n");
+    }
+}
+
+void change_memory_value(int type, unsigned short address, unsigned short value)
+{
+    if (type == 0) {
+        // Instruction memory
+        IMEM[address] = value;
+    }
+    else if (type == 1) {
+        // Data memory
+        DMEM[address] = value;
+    }
+    else {
+        printf("Invalid memory type.\n");
+    }
+
+}
+
+void set_breakpoint(unsigned short address) 
+{
+    breakpoint = address;
 }

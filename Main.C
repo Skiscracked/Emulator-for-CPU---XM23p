@@ -27,11 +27,12 @@ int main() {
     fclose(file);
 
     while (1) {
-        printf("\n? - lists the options (below)\n");
-        printf("L - load\n");
-        printf("M - display mem\n");
-        printf("P - print instructions\n");
-        printf("X - exit\n");
+        printf("\n? - Lists the options (below)\n");
+        printf("L - Load\n");
+        printf("M - Display mem\n");
+        printf("P - Print instructions\n");
+        printf("D - Debugger Commands\n");
+        printf("X - Exit\n");
         printf("Option: ");
         scanf(" %c", &option);
 
@@ -47,6 +48,9 @@ int main() {
             break;
         case 'P':
             decode_and_display(IMEM_SA);
+            break;
+        case 'D':
+            display_and_process_debug_menu();
             break;
         case 'X':
             printf("Exiting...\n");
