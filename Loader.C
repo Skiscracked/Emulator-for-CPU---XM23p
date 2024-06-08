@@ -93,7 +93,8 @@ void writeDataToMemory(unsigned char* memoryType, unsigned int address, unsigned
 }
 
 void setProgramCounter(unsigned int address) {
-    starting_address = address;
+    PC = address; // Giving the PC the starting address of the IMEM
+    reg_file[0][7] = PC; // Giving register 7 the value of PC.
     printf("Program Counter set to start at 0x%04X\n", address);
 }
 

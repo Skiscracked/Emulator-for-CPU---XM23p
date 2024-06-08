@@ -131,7 +131,6 @@
     <ClCompile Include="Decoder.C" />
     <ClCompile Include="Loader.C" />
     <ClCompile Include="Main.C" />
-    <ClCompile Include="Register.C" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Decoder.h" />

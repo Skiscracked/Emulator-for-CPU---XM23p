@@ -25,8 +25,6 @@
 unsigned char IMEM[MEM_SIZE];
 unsigned char DMEM[MEM_SIZE];
 
-//Starting address from S9
-extern unsigned int starting_address;
 
 
 

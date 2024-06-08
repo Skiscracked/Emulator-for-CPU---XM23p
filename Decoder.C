@@ -18,8 +18,6 @@ Instruction fetch(unsigned int pc) {
 
 void decode_and_display(unsigned int SA)// This function is getting the starting address of the IMEM array, to be able to print instructions from that spot
 {
-    PC = SA; // Giving the PC the starting address of the IMEM
-
     while (1)
     {
         Instruction command = fetch(PC);
@@ -41,13 +39,13 @@ void decode_and_display(unsigned int SA)// This function is getting the starting
         else
             printf("%04X: %04X\n", command.address, command.opcode);// Upon if the instruction is unidentified
 
-        PC += 2;// Increment PC by a byte pair
-        
         if (PC + 2 == breakpoint)//Algorithm to check for breakpoint
         {
             printf("Execution has stopped\n");
             break;
         }
+
+        PC += 2;// If PC+2 != breakpoint, increment PC by a byte pair
     }
     //Done:
     // I need to format this to print out the required output.
@@ -313,7 +311,14 @@ void display_registers()
 void change_register_value(int reg, unsigned short value)
 {
     if (reg >= 0 && reg < REGFILE) {
-        reg_file[0][reg] = value;
+        if (value <= 0xFFFF)
+        {
+            reg_file[0][reg] = value;
+            if (reg == 7)
+                PC = value;// Register 7 holds the program counter
+        }
+        else
+            printf("Value is out of bounds. It needs to be less than FFFF\n");
     }
     else {
         printf("Invalid register number.\n");
@@ -322,20 +327,25 @@ void change_register_value(int reg, unsigned short value)
 
 void change_memory_value(int type, unsigned short address, unsigned short value)
 {
-    if (type == 0) {
-        // Instruction memory
-        IMEM[address] = (value & 0x00FF);
-        IMEM[address + 1] = (value >> 8);
-    }
-    else if (type == 1) {
-        // Data memory
-        DMEM[address] = (value & 0x00FF);
-        DMEM[address + 1] = (value >> 8);
-    }
-    else {
-        printf("Invalid memory type.\n");
+    if (value < 65536)
+    {
+        if (type == 0) {
+            // Instruction memory
+            IMEM[address] = (value & 0x00FF);
+            IMEM[address + 1] = (value >> 8);
+        }
+        else if (type == 1) {
+            // Data memory
+            DMEM[address] = (value & 0x00FF);
+            DMEM[address + 1] = (value >> 8);
+        }
+        else {
+            printf("Invalid memory type.\n");
+        }
     }
 
+    else
+        printf("Segmentation fault. Value is outside of boundary");
 }
 
 void set_breakpoint(unsigned short address) 
