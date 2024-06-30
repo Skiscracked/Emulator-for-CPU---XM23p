@@ -1,0 +1,72 @@
+X-Makina Assembler - Version XM-23P Single Pass+ Assembler - Release 24.04.17
+Input file name: Testcase3.asm
+Time of assembly: Sat 29 Jun 2024 16:32:35 
+  1	    	     	; Sample Assembly Program to Test the XM23p Pipeline
+  2	    	     	; Author: Semilore Kayode
+  3	    	     	; Date: 29/06/2024
+  4	    	     	
+  5	    	     	    code
+  6	    	     	    org #1000
+  7	    	     	
+  8	    	     	; Initialize registers
+  9	    	     	;
+ 10	    	     	Main
+ 11	1000	6008	    movl #1,R0     
+ 12	1002	7800	    movh #1,R0     ; Load 0x01 into R0
+ 13	1004	6011	    movl #2,R1     
+ 14	1006	7801	    movh #2,R1     ; Load 0x02 into R1
+ 15	1008	601A	    movl #3,R2     
+ 16	100A	7802	    movh #3,R2     ; Load 0x03 into R2
+ 17	100C	6023	    movl #4,R3     
+ 18	100E	7803	    movh #4,R3     ; Load 0x04 into R3
+ 19	1010	602C	    movl #5,R4     
+ 20	1012	7804	    movh #5,R4     ; Load 0x05 into R4
+ 21	    	     	
+ 22	    	     	    ; Arithmetic operations
+ 23	1014	4001	    add R0,R1           ; R1 = R1 + R0 (0x02 + 0x01 = 0x03)
+ 24	1016	420A	    sub R1,R2           ; R1 = R1 - R2 (0x03 - 0x03 = 0x00)
+ 25	1018	4113	    addc R2,R3          ; R2 = R2 + R3 + Carry (0x03 + 0x04 + 0 = 0x07)
+ 26	101A	431C	    subc R3,R4          ; R3 = R3 - R4 - Carry (0x04 - 0x05 - 0 = 0xFFFF)
+ 27	    	     	
+ 28	    	     	    ; Logical operations
+ 29	101C	4702	    and R0,R2           ; R2 = R2 & R0 (0x07 & 0x01 = 0x01)
+ 30	101E	480B	    or R1,R3            ; R3 = R3 | R1 (0xFFFF | 0x03 = 0xFFFF)
+ 31	1020	4604	    xor R0,R4           ; R0 = R0 ^ R4 (0x01 ^ 0x05 = 0x04)
+ 32	    	     	
+ 33	    	     	    ; Decimal Add operation
+ 34	1022	6095	    movl #12,R5       ; Load 0x12 into R5
+ 35	1024	61A6	    movl #34,R6       ; Load 0x34 into R6
+ 36	1026	442E	    dadd R5,R6          ; R6 = R6 + R5 in BCD (0x12 + 0x34 = 0x46)
+ 37	    	     	
+ 38	    	     	    ; Move operations
+ 39	1028	4C2F	    mov R5,R7           ; R7 = R5 (R7 should be 0x12)
+ 40	    	     	
+ 41	    	     	    end Main
+
+Successful completion of assembly - 1P
+
+** Symbol table **
+
+Constants (Equates)
+Name                               	Type	Value	Decimal
+
+Labels (Code)
+Name                               	Type	Value	Decimal
+Main                               	REL	1000	4096	PRI
+
+Labels (Data)
+Name                               	Type	Value	Decimal
+
+Registers
+Name                               	Type	Value	Decimal
+R7                                 	REG	0007	7	PRI
+R6                                 	REG	0006	6	PRI
+R5                                 	REG	0005	5	PRI
+R4                                 	REG	0004	4	PRI
+R3                                 	REG	0003	3	PRI
+R2                                 	REG	0002	2	PRI
+R1                                 	REG	0001	1	PRI
+R0                                 	REG	0000	0	PRI
+
+.XME file: C:\Users\semil\OneDrive\Documents(main)\School work\3rd year SK\Comp Arch\Assembler\Testcase3.xme
+

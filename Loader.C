@@ -2,7 +2,7 @@
  Name: Semilore Kayode
  B00863886
  Purpose: Creating a loader for the pipelined XM23. This is the Implementation file.
- Note: unsigned variables are used to ensure proper handling of binary values
+ Date: 06/20/2024
 */
 #include "Loader.h"
 
@@ -48,7 +48,7 @@ void Map_Data_to_IMEM(char* S_record) {
     unsigned int address = extractAddress(S_record);//extracting the address from the S-record array
     unsigned char data[100];
     extractData(S_record, length, data);//extracting data
-    writeDataToMemory(IMEM, address, data, length);//writing all 3 extracts to the IMEM array
+    writeDataToMemory(&IMEM, address, data, length);//writing all 3 extracts to the IMEM array
 }
 
 void Map_Data_to_DMEM(char* S_record) {
@@ -56,7 +56,7 @@ void Map_Data_to_DMEM(char* S_record) {
     unsigned int address = extractAddress(S_record);
     unsigned char data[100];
     extractData(S_record, length, data);
-    writeDataToMemory(DMEM, address, data, length);//writing all 3 extracts to the DMEM array
+    writeDataToMemory(&DMEM, address, data, length);//writing all 3 extracts to the DMEM array
 }
 
 void Map_starting_address(char* S_record) {
@@ -86,9 +86,9 @@ void extractData(char* S_record, unsigned int length, unsigned char* data) {
     }
 }
 
-void writeDataToMemory(unsigned char* memoryType, unsigned int address, unsigned char* data, unsigned int length) {
+void writeDataToMemory(union mem *memoryType, unsigned int address, unsigned char* data, unsigned int length) {
     for (unsigned int i = 0; i < length; i++) {
-        memoryType[address + i] = data[i];
+        memoryType->bytmem[address + i] = data[i];
     }
 }
 
@@ -145,7 +145,7 @@ void Display_IMEM() {
         printf("%04X: ", address);//Printing out an interval of 10 address ranges
         for (int i = 0; i < 16; i++) {
             if (address + i < MEM_SIZE) {
-                printf("%02X ", IMEM[address + i]);
+                printf("%02X ", IMEM.bytmem[address + i]);
             }
             else {
                 printf("   ");
@@ -154,7 +154,7 @@ void Display_IMEM() {
         printf(" ");
         for (int i = 0; i < 16; i++) {
             if (address + i < MEM_SIZE) {
-                unsigned char c = IMEM[address + i];
+                unsigned char c = IMEM.bytmem[address + i];
                 if (isprint(c)) {
                     printf("%c", c);//printing out the ASCII equivalents of the byte pairs
                 }
@@ -179,7 +179,7 @@ void Display_DMEM() {
         printf("%04X: ", address);                                      //Printing out an interval of 10 address ranges
         for (int i = 0; i < 16; i++) {
             if (address + i < MEM_SIZE) {
-                printf("%02X ", DMEM[address + i]);
+                printf("%02X ", DMEM.bytmem[address + i]);
             }
             else {
                 printf("   ");
@@ -188,7 +188,7 @@ void Display_DMEM() {
         printf(" ");
         for (int i = 0; i < 16; i++) {//printing out ASCII equivalents for byte pairs in DMEM
             if (address + i < MEM_SIZE) {
-                unsigned char c = DMEM[address + i];
+                unsigned char c = DMEM.bytmem[address + i];
                 if (isprint(c)) {
                     printf("%c", c);
                 }

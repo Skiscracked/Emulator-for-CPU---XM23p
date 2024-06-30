@@ -131,10 +131,13 @@
     <ClCompile Include="Decoder.C" />
     <ClCompile Include="Loader.C" />
     <ClCompile Include="Main.C" />
+    <ClCompile Include="Pipeline.C" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Decoder.h" />
     <ClInclude Include="Loader.h" />
+    <ClInclude Include="Macros.h" />
+    <ClInclude Include="Pipeline.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Addition.xme" />
