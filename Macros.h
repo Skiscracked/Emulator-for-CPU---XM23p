@@ -4,7 +4,7 @@
  B00863866
  Course: ECED 3401
  Prepared for: Dr Hughes
- Purpose: This header file defines various macros used in the project, including constants
+ Purpose: This header file defines various macros (only some macros are defined here, not all) used in the project, including constants
  for memory size and return codes. These macros help improve code readability and
  maintainability by avoiding magic numbers.
  Date: 06/20/2024
@@ -37,7 +37,8 @@
 #define MOVLS 21
 #define MOVH 22
 
-#define BKPNT_CHECK (PC + 2)
+// Defining a macro that represents a breakpoint check
+#define BKPNT_CHECK (IMAR + 2)
 
 
 #define NOP 0x4C09

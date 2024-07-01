@@ -596,11 +596,13 @@ void Run_pipeline_continuous()
             printf("Stages: F1 E0\n");
             F1();
             E0();
-            printf("End: PC: %04X Clk: %x\n\n", PC, Clock);
+            printf("End: PC: %04X Clk: %d ", PC, Clock);
+            printf("PSW: %x%x%x%x \n\n", PSW.V, PSW.N, PSW.Z, PSW.C);
         }
         
         Clock++;
     }
+
 }
 
 void Run_pipeline_single()
@@ -623,7 +625,8 @@ void Run_pipeline_single()
             printf("Stages: F1 E0\n");
             F1();
             E0();
-            printf("End: PC: %04X Clk: %x\n\n", PC, Clock);
+            printf("End: PC: %04X Clk: %d ", PC, Clock);
+            printf("PSW: %x%x%x%x \n\n", PSW.V, PSW.N, PSW.Z, PSW.C);
         }
 
     Clock++;
