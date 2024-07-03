@@ -33,16 +33,15 @@ void decode_and_display()// This function is getting the starting address of the
     while (1)
     {
         Instruction command = Copy_IR(IMAR);
-        if (((command.opcode >> 8) & 0xF0) == 0x40)// If it falls between the 0x40(0100 0000) range call this function
+        if (((command.opcode >> 8) & OPCODE_MASK_40) == OPCODE_GROUP_40)// If it falls between the 0x40(0100 0000) range call this function
             handle_group_40(command);// Calling the function passing command, so the starting address of the IMEM can be obtained by handle_group_40
-        else if (((command.opcode >> 8) & 0xFF) == 0x4D)
-            handle_group_132(command);
-        else if (((command.opcode >> 11) & 0x0C) == 0x0C)
+        else if (((command.opcode >> 11) & OPCODE_MASK_MOV) == OPCODE_MASK_MOV)
             handle_group_MOV(command);
-        else if (command.opcode == 0x0000)
+        else if (command.opcode == OPCODE_NO_OPERATION)
         {
             printf("Program is now ending\n");
-            break;
+            execute_input.UI = 0;
+            return;
         }
         else
             printf("%04X: %04X\n", command.address, command.opcode);// Upon if the instruction is unidentified
