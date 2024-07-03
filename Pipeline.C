@@ -54,7 +54,7 @@ void D0()
          handle_group_40(command);// Calling the function passing command, so the starting address of the IMEM can be obtained by handle_group_40
      else if (((command.opcode >> 11) & OPCODE_MASK_MOV) == OPCODE_MASK_MOV)
          handle_group_MOV(command);
-     else if (command.opcode == OPCODE_NO_OPERATION)
+     else if (command.opcode == OPCODE_NO_INSTRUCTION)
      {
          printf("Program is now ending\n");
          execute_input.UI = 0;

@@ -17,7 +17,7 @@
 #define OPCODE_GROUP_40 0x40 //Macro to represent group of instructions that begin with 0x40
 #define OPCODE_MASK_40 0xF0 // Macro to represent masking group 0x40 instructions
 #define OPCODE_MASK_MOV 0x0C // Macro to mask group 0x0C instructions
-#define OPCODE_NO_OPERATION 0x0000 // NO OP
+#define OPCODE_NO_INSTRUCTION 0x0000 // NO Instruction detected
 #define REG_INDEX_PC 7
 #define PC_INCREMENT 2
 
