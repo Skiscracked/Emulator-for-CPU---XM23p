@@ -37,7 +37,7 @@ void decode_and_display()// This function is getting the starting address of the
             handle_group_40(command);// Calling the function passing command, so the starting address of the IMEM can be obtained by handle_group_40
         else if (((command.opcode >> 11) & OPCODE_MASK_MOV) == OPCODE_MASK_MOV)
             handle_group_MOV(command);
-        else if (command.opcode == OPCODE_NO_OPERATION)
+        else if (command.opcode == OPCODE_NO_INSTRUCTION)
         {
             printf("Program is now ending\n");
             execute_input.UI = 0;
@@ -153,17 +153,19 @@ void handle_group_4C(Instruction instr)
         instr.w_b = ((instr.opcode >> 6) & 0x01);
         instr.s_c = ((instr.opcode >> 3) & 0x07);
         instr.dest = ((instr.opcode) & 0x07);
+        instr.r_c = 0x00;
 
         if ((instr.s_c <= 7) && (instr.dest <= 7))
             printf(" WB: %d SRC: R%d DST: R%d\n", instr.w_b, instr.s_c, instr.dest);
-
+        execute_input = instr;
         execute_input.UI = 13;
         break;
     case 0x01:
         printf("%04X: SWAP", addy);//SWAP Instruction
         instr.s_c = ((instr.opcode >> 3) & 0x07);
         instr.dest = ((instr.opcode) & 0x07);
-        printf(" S: %d DST: R%d\n", instr.s_c, instr.dest);
+        printf(" SRC: R%d DST: R%d\n", instr.s_c, instr.dest);
+        execute_input = instr;
         execute_input.UI = 14;
         break;
     default:
@@ -194,6 +196,7 @@ void handle_group_132(Instruction instr)
 
         if (instr.dest <= 7)
             printf(" DST: R%d\n", instr.dest);
+        execute_input = instr;// After decoding instruction, output it to the input for execute
         execute_input.UI = 17;
         break;
 
@@ -203,6 +206,7 @@ void handle_group_132(Instruction instr)
 
         if (instr.dest <= 7)
             printf(" DST: R%d\n", instr.dest);
+        execute_input = instr;// After decoding instruction, output it to the input for execute
         execute_input.UI = 18;
         break;
     default:

@@ -25,14 +25,13 @@ void F0()
 	ICTRL = 0; // Signal to RD word
 
 
-	PC += 2;
-    reg_file[0][7] = PC; // Giving register 7 the value of PC. To update R7 and for debugging purposes
+	PC += PC_INCREMENT;
+    reg_file[0][REG_INDEX_PC] = PC; // Giving register 7 the value of PC. To update R7 and for debugging purposes
 
     printf("IMAR -> %x\n", IMAR);
-    printf("Start: PC: %04X ", PC);
+    printf("Start: Clk: %d PC: %04X ", Clock, PC);
     printf("PSW: %x%x%x%x ", PSW.V, PSW.N, PSW.Z, PSW.C);
-    printf("Brkpnt: %04X ", breakpoint);
-    printf("Clk: %d\n", Clock);
+    printf("Brkpnt: %04X \n", breakpoint);
 }
 
 void F1()
@@ -413,8 +412,8 @@ void execute_SWAP()
 
         // Swap full word
         temp = reg_file[0][execute_input.dest];
-        reg_file[0][execute_input.dest] = reg_file[execute_input.r_c][execute_input.s_c];
-        reg_file[execute_input.r_c][execute_input.s_c] = temp;
+        reg_file[0][execute_input.dest] = reg_file[0][execute_input.s_c];
+        reg_file[0][execute_input.s_c] = temp;
 }
 
 void execute_SRA()
@@ -591,7 +590,7 @@ void Run_pipeline_continuous()
             printf("Stages: F1 E0\n");
             F1();
             E0();
-            printf("End: PC: %04X Clk: %d ", PC, Clock);
+            printf("End: Clk: %d PC: %04X ", Clock, PC);
             printf("PSW: %x%x%x%x \n\n", PSW.V, PSW.N, PSW.Z, PSW.C);
         }
         
@@ -620,7 +619,7 @@ void Run_pipeline_single()
             printf("Stages: F1 E0\n");
             F1();
             E0();
-            printf("End: PC: %04X Clk: %d ", PC, Clock);
+            printf("End: Clk: %d PC: %04X ",Clock, PC);
             printf("PSW: %x%x%x%x \n\n", PSW.V, PSW.N, PSW.Z, PSW.C);
         }
 

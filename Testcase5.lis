@@ -21,7 +21,7 @@ Time of assembly: Tue 2 Jul 2024 11:19:31
  18	100A	4C8A	    swap R1,R2      ; R2 = R1 (0x02), R1 = R2 (0x03)
  19	100C	4D02	    sra R2          ; Before, R2 = 0x02. After R2 = 0x01
  20	100E	4D0B	    rrc R3          ; Before R3 = 0x80(1000 0000), after R3 = 0x40(0100 0000)
- 21	1010	4D19	    swpb R1         ; Before R1 = 0x02(0000 0010), after R1 = 0x0200(0000 0010 0000 0000)
+ 21	1010	4D19	    swpb R1         ; Before R1 = 0x03(0000 0011), after R1 = 0x0300(0000 0011 0000 0000)
  22	1012	4D24	    sxt R4          ; Before R4 = 0x80(1000 0000), after R4 = 0XFF80(1111 1111 1000 0000)
  23	    	     	
  24	    	     	    end Main
