@@ -32,7 +32,7 @@ void F0()
     printf("Start: PC: %04X ", PC);
     printf("PSW: %x%x%x%x ", PSW.V, PSW.N, PSW.Z, PSW.C);
     printf("Brkpnt: %04X ", breakpoint);
-    printf("Clk: %x\n", Clock);
+    printf("Clk: %d\n", Clock);
 }
 
 void F1()
@@ -51,19 +51,14 @@ void D0()
 {
    
         Instruction command = Copy_IR(IMAR);
-        if (((command.opcode >> 8) & 0xFF) == 0x4C)
-            handle_group_4C(command);
-        else if (((command.opcode >> 8) & 0xF0) == 0x40)// If it falls between the 0x40(0100 0000) range call this function
+        if (((command.opcode >> 8) & 0xF0) == 0x40)// If it falls between the 0x40(0100 0000) range call this function
             handle_group_40(command);// Calling the function passing command, so the starting address of the IMEM can be obtained by handle_group_40
-        else if (((command.opcode >> 3) & 0xFF0) == 0x9A4)
-            handle_group_9A4(command);
-        else if (((command.opcode >> 3) & 0xFFF0) == 0x9A0)
-            handle_group_132(command);
         else if (((command.opcode >> 11) & 0x0C) == 0x0C)
             handle_group_MOV(command);
         else if (command.opcode == 0x0000)
         {
             printf("Program is now ending\n");
+            execute_input.UI = 0;
             return;
         }
         else
@@ -154,16 +149,16 @@ void execute_ADD()
 
     if (execute_input.w_b)
     {
-        result.byte[LSB] = dstnum.byte[LSB] + srcnum.byte[LSB];
+        result.byte[LSB] = (dstnum.byte[LSB] + srcnum.byte[LSB]) & LOWBYTES;
+        result.byte[MSB] = dstnum.byte[MSB];
         update_psw(srcnum.byte[LSB], dstnum.byte[LSB], result.byte[LSB], execute_input.w_b);
-        reg_file[0][execute_input.dest] = result.byte[LSB];
     }
     else
     {
         result.word = dstnum.word + srcnum.word;
         update_psw(srcnum.word, dstnum.word, result.word, execute_input.w_b);
-        reg_file[0][execute_input.dest] = result.word;
     }
+    reg_file[0][execute_input.dest] = result.word;
 }
 
 void execute_ADDC()
@@ -174,17 +169,17 @@ void execute_ADDC()
 
     if (execute_input.w_b)
     {
-        result.byte[LSB] = dstnum.byte[LSB] + srcnum.byte[LSB] + PSW.C;
+        result.byte[LSB] = (dstnum.byte[LSB] + srcnum.byte[LSB] + PSW.C) & LOWBYTES;
+        result.byte[MSB] = dstnum.byte[MSB];
         //Update PSW bit
         update_psw(srcnum.byte[LSB] + PSW.C, dstnum.byte[LSB], result.byte[LSB], execute_input.w_b);
-        reg_file[0][execute_input.dest] = result.byte[LSB];
     }
     else
     {
         result.word = dstnum.word + srcnum.word + PSW.C;
         update_psw(srcnum.word + PSW.C, dstnum.word, result.word, execute_input.w_b);
-        reg_file[0][execute_input.dest] = result.word;
     }
+    reg_file[0][execute_input.dest] = result.word;
 }
 
 void execute_SUB()
@@ -195,16 +190,16 @@ void execute_SUB()
 
     if (execute_input.w_b)
     {
-        result.byte[LSB] = ~srcnum.byte[LSB] + 1 + dstnum.byte[LSB];
+        result.byte[LSB] = (~srcnum.byte[LSB] + 1 + dstnum.byte[LSB]) & LOWBYTES;
+        result.byte[MSB] = dstnum.byte[MSB];
         update_psw(~srcnum.byte[LSB], dstnum.byte[LSB], result.byte[LSB], execute_input.w_b);
-        reg_file[0][execute_input.dest] = result.byte[LSB];
     }
     else
     {
         result.word = ~srcnum.word + 1 + dstnum.word;
         update_psw(~srcnum.word, dstnum.word, result.word, execute_input.w_b);
-        reg_file[0][execute_input.dest] = result.word;
     }
+    reg_file[0][execute_input.dest] = result.word;
 }
 
 
@@ -215,16 +210,16 @@ void execute_SUBC()
 
     if (execute_input.w_b)
     {
-        result.byte[LSB] = dstnum.byte[LSB] + (~srcnum.byte[LSB]) + PSW.C;
+        result.byte[LSB] = (dstnum.byte[LSB] + (~srcnum.byte[LSB]) + PSW.C) & LOWBYTES;
+        result.byte[MSB] = dstnum.byte[MSB];
         update_psw(~srcnum.byte[LSB] + PSW.C, dstnum.byte[LSB], result.byte[LSB], execute_input.w_b);
-        reg_file[0][execute_input.dest] = result.byte[LSB];
     }
     else
     {
         result.word = dstnum.word + (~srcnum.word) + PSW.C;
         update_psw(~srcnum.word + PSW.C, dstnum.word, result.word, execute_input.w_b);
-        reg_file[0][execute_input.dest] = result.word;
     }
+    reg_file[0][execute_input.dest] = result.word;
 }
 
 void execute_DADD()
@@ -575,7 +570,7 @@ unsigned short bcd_add(unsigned short nibble_A, unsigned short nibble_B)
 }
 
 void Run_pipeline_continuous() 
-{
+{// IMAR becomes zero after every odd clock tick why??
     while (BKPNT_CHECK != breakpoint)
     {
         if (ZERO_CLK)

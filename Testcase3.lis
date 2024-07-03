@@ -1,6 +1,6 @@
 X-Makina Assembler - Version XM-23P Single Pass+ Assembler - Release 24.04.17
 Input file name: Testcase3.asm
-Time of assembly: Sat 29 Jun 2024 16:32:35 
+Time of assembly: Tue 2 Jul 2024 00:36:20 
   1	    	     	; Sample Assembly Program to Test the XM23p Pipeline
   2	    	     	; Author: Semilore Kayode
   3	    	     	; Date: 29/06/2024
@@ -38,10 +38,7 @@ Time of assembly: Sat 29 Jun 2024 16:32:35
  35	1024	61A6	    movl #34,R6       ; Load 0x34 into R6
  36	1026	442E	    dadd R5,R6          ; R6 = R6 + R5 in BCD (0x12 + 0x34 = 0x46)
  37	    	     	
- 38	    	     	    ; Move operations
- 39	1028	4C2F	    mov R5,R7           ; R7 = R5 (R7 should be 0x12)
- 40	    	     	
- 41	    	     	    end Main
+ 38	    	     	    end Main
 
 Successful completion of assembly - 1P
 

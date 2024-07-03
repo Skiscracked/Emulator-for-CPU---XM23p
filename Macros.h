@@ -47,5 +47,11 @@
 // Defining even clock tick for the pipeline
 #define EVEN_CLK (Clock % 2 == 0)
 
+/*
+  Defining a constant for low bytes to always take the low bytes
+  when dealing with byte implementation of instructions
+*/
+#define LOWBYTES 0xFF
+
 
 #endif // !

@@ -35,7 +35,4 @@ Main
     movl #34,R6       ; Load 0x34 into R6
     dadd R5,R6          ; R6 = R6 + R5 in BCD (0x12 + 0x34 = 0x46)
 
-    ; Move operations
-    mov R5,R7           ; R7 = R5 (R7 should be 0x12)
-
     end Main

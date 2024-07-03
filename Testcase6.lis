@@ -1,0 +1,50 @@
+X-Makina Assembler - Version XM-23P Single Pass+ Assembler - Release 24.04.17
+Input file name: Testcase6.asm
+Time of assembly: Tue 2 Jul 2024 20:00:43 
+  1	    	     	; Sample Assembly Program to Test the XM23p Pipeline
+  2	    	     	; Author: Semilore Kayode
+  3	    	     	; Date: 02/07/2024
+  4	    	     	
+  5	    	     	    code
+  6	    	     	    org #1000
+  7	    	     	
+  8	    	     	; Initialize registers
+  9	    	     	;
+ 10	    	     	Main 
+ 11	1000	67F8	    movl #FF,R0     ; Load 0xFF into LOW R0    
+ 12	1002	7FF8	    movh #FF00,R0     ; Load 0xFF into HIGH R0
+ 13	1004	6009	    movl #1,R1      ; Load 0x01 into LOW R1
+ 14	1006	7801	    movh #0,R1     ; Load 0x00 into HIGH R1
+ 15	    	     	
+ 16	    	     	
+ 17	1008	4048	    add.b R1,R0     ; R0 = FF 00, Carry = 1
+ 18	    	     	
+ 19	    	     	    end Main
+
+Successful completion of assembly - 1P
+
+** Symbol table **
+
+Constants (Equates)
+Name                               	Type	Value	Decimal
+
+Labels (Code)
+Name                               	Type	Value	Decimal
+Main                               	REL	1000	4096	PRI
+
+Labels (Data)
+Name                               	Type	Value	Decimal
+
+Registers
+Name                               	Type	Value	Decimal
+R7                                 	REG	0007	7	PRI
+R6                                 	REG	0006	6	PRI
+R5                                 	REG	0005	5	PRI
+R4                                 	REG	0004	4	PRI
+R3                                 	REG	0003	3	PRI
+R2                                 	REG	0002	2	PRI
+R1                                 	REG	0001	1	PRI
+R0                                 	REG	0000	0	PRI
+
+.XME file: C:\Users\semil\OneDrive\Documents(main)\School work\3rd year SK\Comp Arch\Assembler\Testcase6.xme
+

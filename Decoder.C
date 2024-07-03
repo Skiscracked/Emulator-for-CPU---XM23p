@@ -33,13 +33,9 @@ void decode_and_display()// This function is getting the starting address of the
     while (1)
     {
         Instruction command = Copy_IR(IMAR);
-        if (((command.opcode >> 8) & 0xFF) == 0x4C)
-            handle_group_4C(command);
-        else if (((command.opcode >> 8) & 0xF0) == 0x40)// If it falls between the 0x40(0100 0000) range call this function
+        if (((command.opcode >> 8) & 0xF0) == 0x40)// If it falls between the 0x40(0100 0000) range call this function
             handle_group_40(command);// Calling the function passing command, so the starting address of the IMEM can be obtained by handle_group_40
-        else if (((command.opcode >> 3) & 0xFF0) == 0x9A4)
-            handle_group_9A4(command);
-        else if (((command.opcode >> 3) & 0xFFF0) == 0x9A0)
+        else if (((command.opcode >> 8) & 0xFF) == 0x4D)
             handle_group_132(command);
         else if (((command.opcode >> 11) & 0x0C) == 0x0C)
             handle_group_MOV(command);
@@ -133,6 +129,12 @@ void handle_group_40(Instruction instr) //addy in this case is going to be the c
         display_content(instr);
         execute_input.UI = 12;
         break;
+    case 0x0C:
+        handle_group_4C(instr);
+        break;
+    case 0x0D:
+        handle_group_132(instr);
+        break;
     default:
         printf("%04X: %04X\n", addy, instr.opcode);// Upon if the instruction is unidentified
         break;
@@ -175,7 +177,7 @@ void handle_group_132(Instruction instr)
 {
     unsigned int addy;
     addy = instr.address;
-    switch ((instr.opcode >> 3) & 0x01)
+    switch ((instr.opcode >> 3) & 0x07)
     {
     case 0x00:
         printf("%04X: SRA", addy); //SRA Instruction
@@ -187,13 +189,30 @@ void handle_group_132(Instruction instr)
         display_content_4_SRA_and_RRC(instr);
         execute_input.UI = 16;
         break;
+    case 0x03:
+        printf("%04X: SWPB", addy);//SWPB Instruction
+        instr.dest = ((instr.opcode) & 0x07);
+
+        if (instr.dest <= 7)
+            printf(" DST: R%d\n", instr.dest);
+        execute_input.UI = 17;
+        break;
+
+    case 0x04:
+        printf("%04X: SXT", addy);//SXT Instruction
+        instr.dest = ((instr.opcode) & 0x07);
+
+        if (instr.dest <= 7)
+            printf(" DST: R%d\n", instr.dest);
+        execute_input.UI = 18;
+        break;
     default:
         printf("%04X: %04X\n", addy, instr.opcode);// Upon if the instruction is unidentified
         break;
     }
 }
 
-void handle_group_9A4(Instruction instr)
+/*void handle_group_9A4(Instruction instr)
 {
     unsigned int addy;
     addy = instr.address;
@@ -221,7 +240,7 @@ void handle_group_9A4(Instruction instr)
         break;
     }
 }
-
+*/
 void handle_group_MOV(Instruction instr)
 {
     unsigned int addy;
