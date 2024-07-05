@@ -46,6 +46,8 @@
 #define MOVLZ 20
 #define MOVLS 21
 #define MOVH 22
+#define SETcc 23
+#define CLRcc 24
 
 // Defining a macro that represents a breakpoint check
 #define BKPNT_CHECK (IMAR + 2)
@@ -61,7 +63,12 @@
   Defining a constant for low bytes to always take the low bytes
   when dealing with byte implementation of instructions
 */
-#define LOWBYTES 0xFF
+#define LOWBYTES_MASK 0x00FF
+#define LOWNIB_MASK 0x000F
+#define LSBit 0x01
+
+#define SET 1
+#define CLEAR 0
 
 
 

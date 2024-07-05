@@ -17,7 +17,11 @@ typedef struct {
 	int N;
 	int Z;
 	int C;
+    int SLP;
 }ProgramStatusWord;
+
+extern ProgramStatusWord SETCC, CLRCC;
+//These are external variables for instructions which set/clear the PSW bits
 
 extern unsigned carry[2][2][2];
 extern unsigned overflow[2][2][2];
@@ -76,6 +80,8 @@ void execute_MOVL();
 void execute_MOVLZ();
 void execute_MOVLS();
 void execute_MOVH();
+void execute_SETCC();
+void execute_CLRCC();
 
 
 void update_psw(unsigned short src, unsigned short dest, unsigned short result, unsigned short wb); // This function updates VNZC

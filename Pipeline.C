@@ -12,7 +12,7 @@
 unsigned short IMAR, IMBR, IR, Clock;
 bool ICTRL;
 unsigned short ;
-ProgramStatusWord PSW;
+ProgramStatusWord PSW, SETCC, CLRCC;
 
 unsigned carry[2][2][2] = { 0, 0, 1, 0, 1, 0, 1, 1 };
 unsigned overflow[2][2][2] = { 0, 1, 0, 0, 0, 0, 1, 0 };
@@ -134,6 +134,12 @@ void E0()
     case MOVH:
         execute_MOVH();
         break;
+    case SETcc:
+        execute_SETCC();
+        break;
+    case CLRcc:
+        execute_CLRCC();
+        break;
     default :
         printf("Instruction % 04X: % 04X not executed or End of Program\n"
             , execute_input.address, execute_input.opcode);
@@ -148,7 +154,7 @@ void execute_ADD()
 
     if (execute_input.w_b)
     {
-        result.byte[LSB] = (dstnum.byte[LSB] + srcnum.byte[LSB]) & LOWBYTES;
+        result.byte[LSB] = (dstnum.byte[LSB] + srcnum.byte[LSB]) & LOWBYTES_MASK;
         result.byte[MSB] = dstnum.byte[MSB];
         update_psw(srcnum.byte[LSB], dstnum.byte[LSB], result.byte[LSB], execute_input.w_b);
     }
@@ -168,7 +174,7 @@ void execute_ADDC()
 
     if (execute_input.w_b)
     {
-        result.byte[LSB] = (dstnum.byte[LSB] + srcnum.byte[LSB] + PSW.C) & LOWBYTES;
+        result.byte[LSB] = (dstnum.byte[LSB] + srcnum.byte[LSB] + PSW.C) & LOWBYTES_MASK;
         result.byte[MSB] = dstnum.byte[MSB];
         //Update PSW bit
         update_psw(srcnum.byte[LSB] + PSW.C, dstnum.byte[LSB], result.byte[LSB], execute_input.w_b);
@@ -189,7 +195,7 @@ void execute_SUB()
 
     if (execute_input.w_b)
     {
-        result.byte[LSB] = (~srcnum.byte[LSB] + 1 + dstnum.byte[LSB]) & LOWBYTES;
+        result.byte[LSB] = (~srcnum.byte[LSB] + 1 + dstnum.byte[LSB]) & LOWBYTES_MASK;
         result.byte[MSB] = dstnum.byte[MSB];
         update_psw(~srcnum.byte[LSB], dstnum.byte[LSB], result.byte[LSB], execute_input.w_b);
     }
@@ -209,7 +215,7 @@ void execute_SUBC()
 
     if (execute_input.w_b)
     {
-        result.byte[LSB] = (dstnum.byte[LSB] + (~srcnum.byte[LSB]) + PSW.C) & LOWBYTES;
+        result.byte[LSB] = (dstnum.byte[LSB] + (~srcnum.byte[LSB]) + PSW.C) & LOWBYTES_MASK;
         result.byte[MSB] = dstnum.byte[MSB];
         update_psw(~srcnum.byte[LSB] + PSW.C, dstnum.byte[LSB], result.byte[LSB], execute_input.w_b);
     }
@@ -506,6 +512,24 @@ void execute_MOVH()
 
     // Update only the upper byte of the destination register
     reg_file[0][execute_input.dest] = (dstnum.word & 0x00FF) | (execute_input.data << 8);
+}
+
+void execute_SETCC()
+{
+    PSW.V = SETCC.V ? SET : PSW.V;
+    PSW.SLP = SETCC.SLP ? SET : PSW.SLP;
+    PSW.N = SETCC.N ? SET : PSW.N;
+    PSW.Z = SETCC.Z ? SET : PSW.Z;
+    PSW.C = SETCC.C ? SET : PSW.C;
+}
+
+void execute_CLRCC()
+{
+    PSW.V = CLRCC.V ? CLEAR : PSW.V;
+    PSW.SLP = CLRCC.SLP ? CLEAR : PSW.SLP;
+    PSW.N = CLRCC.N ? CLEAR : PSW.N;
+    PSW.Z = CLRCC.Z ? CLEAR : PSW.Z;
+    PSW.C = CLRCC.C ? CLEAR : PSW.C;
 }
 
 

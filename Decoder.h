@@ -43,6 +43,7 @@ extern Instruction command;
 extern Instruction execute_input;
 // This struct is populate by the Decode function and is an input for execute
 
+
 void decode_and_display();
 void display_content(Instruction content);
 void display_content_4_SRA_and_RRC(Instruction content);
@@ -52,6 +53,7 @@ void handle_group_132(Instruction instr);
 void handle_group_9A4(Instruction instr);
 void handle_group_MOV(Instruction instr);
 void extract_data_and_dest(Instruction* instr_handler);
+void handle_SETCC_and_CLRCC(Instruction instr);
 // Register functions
 Instruction Copy_IR(unsigned int pc);
 void display_and_process_debug_menu();

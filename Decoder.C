@@ -66,7 +66,7 @@ void handle_group_40(Instruction instr) //addy in this case is going to be the c
 // The PC is going to hold the next instructions
 {
     unsigned int addy = instr.address;
-    switch ((instr.opcode >> 8) & 0x000F)  // Masking to get the relevant bits (getting the lower 4 bits of the first 8 bit from the 16 bits) 
+    switch ((instr.opcode >> 8) & LOWNIB_MASK)  // Masking to get the relevant bits (getting the lower 4 bits of the first 8 bit from the 16 bits) 
     {
     case 0x00: //ADD opcode
         printf("%04X: ADD", addy);// ADD Instruction
@@ -132,7 +132,10 @@ void handle_group_40(Instruction instr) //addy in this case is going to be the c
         handle_group_4C(instr);
         break;
     case 0x0D:
-        handle_group_132(instr);
+        if (((instr.opcode >> 7) & 0x01) == 0)
+            handle_group_132(instr);
+        else
+            handle_SETCC_and_CLRCC(instr);
         break;
     default:
         printf("%04X: %04X\n", addy, instr.opcode);// Upon if the instruction is unidentified
@@ -283,6 +286,31 @@ void extract_data_and_dest(Instruction* instr_handler)
     instr_handler->data = ((instr_handler->opcode >> 3) & 0xFF);
 
     execute_input = *instr_handler;// After decoding instruction, output it to the input for execute
+}
+
+void handle_SETCC_and_CLRCC(Instruction instr)
+{
+    ProgramStatusWord SETCC, CLRCC;
+    Instruction temp = instr;
+    switch ((temp.opcode >> 5) & 0x02)
+    {
+    case 0x01:
+        SETCC.V = (temp.opcode >> 4) & LSBit;
+        SETCC.SLP = (temp.opcode >> 3) & LSBit;
+        SETCC.N = (temp.opcode >> 2) & LSBit;
+        SETCC.Z = (temp.opcode >> 1) & LSBit;
+        SETCC.C = (temp.opcode) & LSBit;
+        execute_input.UI = 23;
+        break;
+    case 0x02:
+        CLRCC.V = (temp.opcode >> 4) & LSBit;
+        CLRCC.SLP = (temp.opcode >> 3) & LSBit;
+        CLRCC.N = (temp.opcode >> 2) & LSBit;
+        CLRCC.Z = (temp.opcode >> 1) & LSBit;
+        CLRCC.C = (temp.opcode) & LSBit;
+        execute_input.UI = 24;
+        break;
+    }
 }
 
 void display_content(Instruction content)
