@@ -11,6 +11,7 @@
 */
 
 Instruction execute_input;
+ProgramStatusWord SETCC, CLRCC;
 
 // Initializing the reg_file
 unsigned short reg_file[REGCON][REGFILE] = {
@@ -69,62 +70,62 @@ void handle_group_40(Instruction instr) //addy in this case is going to be the c
     switch ((instr.opcode >> 8) & LOWNIB_MASK)  // Masking to get the relevant bits (getting the lower 4 bits of the first 8 bit from the 16 bits) 
     {
     case 0x00: //ADD opcode
-        printf("%04X: ADD", addy);// ADD Instruction
+        //printf("%04X: ADD", addy);// ADD Instruction
         display_content(instr);
         execute_input.UI = 1;
         break;
     case 0x01:
-        printf("%04X: ADDC", addy);// ADDC Instruction
+        //printf("%04X: ADDC", addy);// ADDC Instruction
         display_content(instr);
         execute_input.UI = 2;
         break;
     case 0x02:
-        printf("%04X: SUB", addy);// SUB Instruction
+        //printf("%04X: SUB", addy);// SUB Instruction
         display_content(instr);
         execute_input.UI = 3;
         break;
     case 0x03:
-        printf("%04X: SUBC", addy);// SUBC Instruction
+        //printf("%04X: SUBC", addy);// SUBC Instruction
         display_content(instr);
         execute_input.UI = 4;
         break;
     case 0x04:
-        printf("%04X: DADD", addy);// DADD Instruction
+        //printf("%04X: DADD", addy);// DADD Instruction
         display_content(instr);
         execute_input.UI = 5;
         break;
     case 0x05:
-        printf("%04X: CMP", addy);// CMP Instruction
+        //printf("%04X: CMP", addy);// CMP Instruction
         display_content(instr);
         execute_input.UI = 6;
         break;
     case 0x06:
-        printf("%04X: XOR", addy);// XOR Instruction
+        //printf("%04X: XOR", addy);// XOR Instruction
         display_content(instr);
         execute_input.UI = 7;
         break;
     case 0x07:
-        printf("%04X: AND", addy);// AND Instruction
+        //printf("%04X: AND", addy);// AND Instruction
         display_content(instr);
         execute_input.UI = 8;
         break;
     case 0x08:
-        printf("%04X: OR", addy);// OR Instruction
+        //printf("%04X: OR", addy);// OR Instruction
         display_content(instr);
         execute_input.UI = 9;
         break;
     case 0x09:
-        printf("%04X: BIT", addy);// BIT Instruction
+        //printf("%04X: BIT", addy);// BIT Instruction
         display_content(instr);
         execute_input.UI = 10;
         break;
     case 0x0A:
-        printf("%04X: BIC", addy);// BIC Instruction
+        //printf("%04X: BIC", addy);// BIC Instruction
         display_content(instr);
         execute_input.UI = 11;
         break;
     case 0x0B:
-        printf("%04X: BIS", addy);// BIS Instruction
+        //printf("%04X: BIS", addy);// BIS Instruction
         display_content(instr);
         execute_input.UI = 12;
         break;
@@ -137,9 +138,6 @@ void handle_group_40(Instruction instr) //addy in this case is going to be the c
         else
             handle_SETCC_and_CLRCC(instr);
         break;
-    default:
-        printf("%04X: %04X\n", addy, instr.opcode);// Upon if the instruction is unidentified
-        break;
     }
 
 }
@@ -151,28 +149,25 @@ void handle_group_4C(Instruction instr)
     switch ((instr.opcode >> 7) & 0x03)//Shifting and masking 
     {
     case 0x00:
-        printf("%04X: MOV", addy); //MOV Instruction
+        //printf("%04X: MOV", addy); //MOV Instruction
         //display_content(instr);
         instr.w_b = ((instr.opcode >> 6) & 0x01);
         instr.s_c = ((instr.opcode >> 3) & 0x07);
         instr.dest = ((instr.opcode) & 0x07);
         instr.r_c = 0x00;
 
-        if ((instr.s_c <= 7) && (instr.dest <= 7))
-            printf(" WB: %d SRC: R%d DST: R%d\n", instr.w_b, instr.s_c, instr.dest);
+        /*if ((instr.s_c <= 7) && (instr.dest <= 7))
+            printf(" WB: %d SRC: R%d DST: R%d\n", instr.w_b, instr.s_c, instr.dest);*/
         execute_input = instr;
         execute_input.UI = 13;
         break;
     case 0x01:
-        printf("%04X: SWAP", addy);//SWAP Instruction
+        //printf("%04X: SWAP", addy);//SWAP Instruction
         instr.s_c = ((instr.opcode >> 3) & 0x07);
         instr.dest = ((instr.opcode) & 0x07);
-        printf(" SRC: R%d DST: R%d\n", instr.s_c, instr.dest);
+        //printf(" SRC: R%d DST: R%d\n", instr.s_c, instr.dest);
         execute_input = instr;
         execute_input.UI = 14;
-        break;
-    default:
-        printf("%04X: %04X\n", addy, instr.opcode);// Upon if the instruction is unidentified
         break;
     }
 }
@@ -184,36 +179,33 @@ void handle_group_132(Instruction instr)
     switch ((instr.opcode >> 3) & 0x07)
     {
     case 0x00:
-        printf("%04X: SRA", addy); //SRA Instruction
+        //printf("%04X: SRA", addy); //SRA Instruction
         display_content_4_SRA_and_RRC(instr);
         execute_input.UI = 15;
         break;
     case 0x01:
-        printf("%04X: RRC", addy);//RRC Instruction
+        //printf("%04X: RRC", addy);//RRC Instruction
         display_content_4_SRA_and_RRC(instr);
         execute_input.UI = 16;
         break;
     case 0x03:
-        printf("%04X: SWPB", addy);//SWPB Instruction
+        //printf("%04X: SWPB", addy);//SWPB Instruction
         instr.dest = ((instr.opcode) & 0x07);
 
-        if (instr.dest <= 7)
-            printf(" DST: R%d\n", instr.dest);
+        /*if (instr.dest <= 7)
+            printf(" DST: R%d\n", instr.dest);*/
         execute_input = instr;// After decoding instruction, output it to the input for execute
         execute_input.UI = 17;
         break;
 
     case 0x04:
-        printf("%04X: SXT", addy);//SXT Instruction
+        //printf("%04X: SXT", addy);//SXT Instruction
         instr.dest = ((instr.opcode) & 0x07);
 
         if (instr.dest <= 7)
-            printf(" DST: R%d\n", instr.dest);
+            //printf(" DST: R%d\n", instr.dest);
         execute_input = instr;// After decoding instruction, output it to the input for execute
         execute_input.UI = 18;
-        break;
-    default:
-        printf("%04X: %04X\n", addy, instr.opcode);// Upon if the instruction is unidentified
         break;
     }
 }
@@ -256,26 +248,23 @@ void handle_group_MOV(Instruction instr)
     {
     case 0x0C:
         extract_data_and_dest(&temp);
-        printf("%04X: MOVL DST.Low: %x DST: R%x\n", addy, temp.data, temp.dest);
+        //printf("%04X: MOVL DST.Low: %x DST: R%x\n", addy, temp.data, temp.dest);
         execute_input.UI = 19;
         break;
     case 0x0D:
         extract_data_and_dest(&temp);
-        printf("%04X: MOVLZ DST.Low: %x DST: R%x\n", addy, temp.data, temp.dest);
+        //printf("%04X: MOVLZ DST.Low: %x DST: R%x\n", addy, temp.data, temp.dest);
         execute_input.UI = 20;
         break;
     case 0x0E:
         extract_data_and_dest(&temp);
-        printf("%04X: MOVLS DST.Low: %x DST: R%x\n", addy, temp.data, temp.dest);
+        //printf("%04X: MOVLS DST.Low: %x DST: R%x\n", addy, temp.data, temp.dest);
         execute_input.UI = 21;
         break;
     case 0x0F:
         extract_data_and_dest(&temp);
-        printf("%04X: MOVH DST.High: %x DST: R%x\n", addy, temp.data, temp.dest);
+        //printf("%04X: MOVH DST.High: %x DST: R%x\n", addy, temp.data, temp.dest);
         execute_input.UI = 22;
-        break;
-    default:
-        printf("%04X: %04X\n", addy, temp.opcode);// Upon if the instruction is unidentified
         break;
     }
 }
@@ -290,23 +279,23 @@ void extract_data_and_dest(Instruction* instr_handler)
 
 void handle_SETCC_and_CLRCC(Instruction instr)
 {
-    ProgramStatusWord SETCC, CLRCC;
     Instruction temp = instr;
-    switch ((temp.opcode >> 5) & 0x02)
+    execute_input = temp;
+    switch ((temp.opcode >> FIVE) & THREE)
     {
     case 0x01:
-        SETCC.V = (temp.opcode >> 4) & LSBit;
-        SETCC.SLP = (temp.opcode >> 3) & LSBit;
-        SETCC.N = (temp.opcode >> 2) & LSBit;
-        SETCC.Z = (temp.opcode >> 1) & LSBit;
+        SETCC.V = (temp.opcode >> FOUR) & LSBit;
+        SETCC.SLP = (temp.opcode >> THREE) & LSBit;
+        SETCC.N = (temp.opcode >> TWO) & LSBit;
+        SETCC.Z = (temp.opcode >> ONE) & LSBit;
         SETCC.C = (temp.opcode) & LSBit;
         execute_input.UI = 23;
         break;
     case 0x02:
-        CLRCC.V = (temp.opcode >> 4) & LSBit;
-        CLRCC.SLP = (temp.opcode >> 3) & LSBit;
-        CLRCC.N = (temp.opcode >> 2) & LSBit;
-        CLRCC.Z = (temp.opcode >> 1) & LSBit;
+        CLRCC.V = (temp.opcode >> FOUR) & LSBit;
+        CLRCC.SLP = (temp.opcode >> THREE) & LSBit;
+        CLRCC.N = (temp.opcode >> TWO) & LSBit;
+        CLRCC.Z = (temp.opcode >> ONE) & LSBit;
         CLRCC.C = (temp.opcode) & LSBit;
         execute_input.UI = 24;
         break;
@@ -323,11 +312,11 @@ void display_content(Instruction content)
 
     execute_input = content;// After decoding instruction output, it to the input for execute
 
-    if (content.r_c == 0)
+    /*if (content.r_c == 0)
         printf(" RC: %d WB: %d SRC: R%d DST: R%d\n", content.r_c, content.w_b, content.s_c, content.dest);
 
     else if (content.r_c == 1)
-        printf(" RC: %d WB: %d CON: %d DST: R%d\n", content.r_c, content.w_b, content.s_c, content.dest);
+        printf(" RC: %d WB: %d CON: %d DST: R%d\n", content.r_c, content.w_b, content.s_c, content.dest);*/
 }
 
 void display_content_4_SRA_and_RRC(Instruction content)
@@ -335,8 +324,8 @@ void display_content_4_SRA_and_RRC(Instruction content)
     content.w_b = ((content.opcode >> 6) & 0x01);
     content.dest = ((content.opcode) & 0x07);
 
-    if (content.dest <= 7)
-        printf(" WB: %d DST: R%d\n", content.w_b, content.dest);
+    /*if (content.dest <= 7)
+        printf(" WB: %d DST: R%d\n", content.w_b, content.dest);*/
 
     execute_input = content;// After decoding instruction, output it to the input for execute
 }

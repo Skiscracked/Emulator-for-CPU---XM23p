@@ -70,6 +70,13 @@
 #define SET 1
 #define CLEAR 0
 
+#define FIVE 5
+#define FOUR 4
+#define THREE 3
+#define TWO 2
+#define ONE 1
+// Defining some commonly used values
+
 
 
 #endif // !

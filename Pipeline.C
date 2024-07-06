@@ -28,10 +28,10 @@ void F0()
 	PC += PC_INCREMENT;
     reg_file[0][REG_INDEX_PC] = PC; // Giving register 7 the value of PC. To update R7 and for debugging purposes
 
-    printf("IMAR -> %x\n", IMAR);
+    /*printf("IMAR -> %x\n", IMAR);
     printf("Start: Clk: %d PC: %04X ", Clock, PC);
     printf("PSW: %x%x%x%x ", PSW.V, PSW.N, PSW.Z, PSW.C);
-    printf("Brkpnt: %04X \n", breakpoint);
+    printf("Brkpnt: %04X \n", breakpoint);*/
 }
 
 void F1()
@@ -59,8 +59,6 @@ void D0()
          execute_input.UI = 0;
          return;
      }
-     else
-         printf("%04X: %04X\n", command.address, command.opcode);// Upon if the instruction is unidentified
 
 }
 
@@ -140,9 +138,6 @@ void E0()
     case CLRcc:
         execute_CLRCC();
         break;
-    default :
-        printf("Instruction % 04X: % 04X not executed or End of Program\n"
-            , execute_input.address, execute_input.opcode);
     }
     
 }
@@ -594,28 +589,28 @@ unsigned short bcd_add(unsigned short nibble_A, unsigned short nibble_B)
 
 void Run_pipeline_continuous() 
 {// IMAR becomes zero after every odd clock tick why??
+    printf("Clock\tPC\tInstruction\tFetch\t\tDecode\t\tExecute\t\tPSW\n");
     while (BKPNT_CHECK != breakpoint)
     {
         if (ZERO_CLK)
         {
             IR = NOP;
-            printf("Fetching NOP\n");
+            //printf("Fetching NOP\n");
         }
         
         
         if (EVEN_CLK)
         {
-            printf("Stages: F0 D0\n");
             F0();
             D0();
+            printf("%d\t%04X\t%04X\t\tF0: %04X\tD0: %04X\n", Clock, IMAR, IMBR, IMAR, IR);
         }
         else
         {
-            printf("Stages: F1 E0\n");
             F1();
             E0();
-            printf("End: Clk: %d PC: %04X ", Clock, PC);
-            printf("PSW: %x%x%x%x \n\n", PSW.V, PSW.N, PSW.Z, PSW.C);
+            printf("%d\t\t\t\tF1: %04X\t\t\tE0: %04X", Clock, IMBR, execute_input.opcode);
+            printf("\t%x%x%x%x \n", PSW.V, PSW.N, PSW.Z, PSW.C);
         }
         
         Clock++;
@@ -625,27 +620,27 @@ void Run_pipeline_continuous()
 
 void Run_pipeline_single()
 {
-        if (ZERO_CLK)
-        {
-            IR = NOP;
-            printf("Fetching NOP\n");
-        }
+    printf("Clock\tPC\tInstruction\tFetch\t\tDecode\t\tExecute\t\tPSW\n");
+    if (ZERO_CLK)
+    {
+        IR = NOP;
+        //printf("Fetching NOP\n");
+    }
 
         
-        if (EVEN_CLK)
-        {
-            printf("Stages: F0 D0\n");
-            F0();
-            D0();
-        }
-        else
-        {
-            printf("Stages: F1 E0\n");
-            F1();
-            E0();
-            printf("End: Clk: %d PC: %04X ",Clock, PC);
-            printf("PSW: %x%x%x%x \n\n", PSW.V, PSW.N, PSW.Z, PSW.C);
-        }
+    if (EVEN_CLK)
+    {
+        F0();
+        D0();
+        printf("%d\t%04X\t%04X\t\tF0: %04X\tD0: %04X\n", Clock, IMAR, IMBR, IMAR, IR);
+    }
+    else
+    {
+        F1();
+        E0();
+        printf("%d\t\t\t\tF1: %04X\t\t\tE0: %04X", Clock, IMBR, execute_input.opcode);
+        printf("\t%x%x%x%x \n", PSW.V, PSW.N, PSW.Z, PSW.C);
+    }
 
     Clock++;
 }
