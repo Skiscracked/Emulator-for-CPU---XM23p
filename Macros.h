@@ -17,10 +17,12 @@
 #define OPCODE_GROUP_40 0x40 //Macro to represent group of instructions that begin with 0x40
 #define OPCODE_MASK_40 0xF0 // Macro to represent masking group 0x40 instructions
 #define OPCODE_MASK_MOV 0x0C // Macro to mask group 0x0C instructions
+#define OPCODE_MASK_LD_ST 0x0B // MAcro to mask LD and ST
 #define OPCODE_NO_INSTRUCTION 0x0000 // NO Instruction detected
+#define OFFSET_MASK 0x7F // Macro to mask offset
 #define REG_INDEX_PC 7
 #define PC_INCREMENT 2
-
+#define REG 0
 
 
 // Defining UI(Unique Identifiers) for the different execute functions
@@ -48,6 +50,10 @@
 #define MOVH 22
 #define SETcc 23
 #define CLRcc 24
+#define LD 25
+#define ST 26
+#define LDR 27
+#define STR 28
 
 // Defining a macro that represents a breakpoint check
 #define BKPNT_CHECK (IMAR + 2)
@@ -63,13 +69,21 @@
   Defining a constant for low bytes to always take the low bytes
   when dealing with byte implementation of instructions
 */
-#define LOWBYTES_MASK 0x00FF
+#define LOWBYTE_MASK 0x00FF
 #define LOWNIB_MASK 0x000F
 #define LSBit 0x01
 
 #define SET 1
 #define CLEAR 0
 
+#define READ 0
+#define WRITE 1
+
+#define TEN 10
+#define NINE 9
+#define EIGHT 8
+#define SEVEN 7
+#define SIX 6
 #define FIVE 5
 #define FOUR 4
 #define THREE 3
@@ -77,6 +91,9 @@
 #define ONE 1
 // Defining some commonly used values
 
+
+#define LD_DIRECT_ADDRESSING 0xB0
+#define ST_DIRECT_ADDRESSING 0xB8
 
 
 #endif // !

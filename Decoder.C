@@ -155,9 +155,6 @@ void handle_group_4C(Instruction instr)
         instr.s_c = ((instr.opcode >> 3) & 0x07);
         instr.dest = ((instr.opcode) & 0x07);
         instr.r_c = 0x00;
-
-        /*if ((instr.s_c <= 7) && (instr.dest <= 7))
-            printf(" WB: %d SRC: R%d DST: R%d\n", instr.w_b, instr.s_c, instr.dest);*/
         execute_input = instr;
         execute_input.UI = 13;
         break;
@@ -210,35 +207,7 @@ void handle_group_132(Instruction instr)
     }
 }
 
-/*void handle_group_9A4(Instruction instr)
-{
-    unsigned int addy;
-    addy = instr.address;
-    switch ((instr.opcode >> 3) & 0x000F)
-    {
-    case 0x03:
-        printf("%04X: SWPB", addy);//SWPB Instruction
-        instr.dest = ((instr.opcode) & 0x07);
 
-        if (instr.dest <= 7)
-            printf(" DST: R%d\n", instr.dest);
-        execute_input.UI = 17;
-        break;
-
-    case 0x04:
-        printf("%04X: SXT", addy);//SXT Instruction
-        instr.dest = ((instr.opcode) & 0x07);
-
-        if (instr.dest <= 7)
-            printf(" DST: R%d\n", instr.dest);
-        execute_input.UI = 18;
-        break;
-    default:
-        printf("%04X: %04X\n", addy, instr.opcode);// Upon if the instruction is unidentified
-        break;
-    }
-}
-*/
 void handle_group_MOV(Instruction instr)
 {
     unsigned int addy;
@@ -300,6 +269,62 @@ void handle_SETCC_and_CLRCC(Instruction instr)
         execute_input.UI = 24;
         break;
     }
+    
+}
+
+void handle_group_LD_and_ST(Instruction instr)
+{
+    Instruction handler = instr;
+    switch ((handler.opcode >> TEN) & LSBit)
+    {
+    case 0:
+        // This handles decoding data for instruction - LD
+        handler.dest = (handler.opcode & SEVEN);
+        handler.s_c = ((handler.opcode >> THREE) & SEVEN);
+        handler.w_b = ((handler.opcode >> SIX) & LSBit);
+        handler.INC = ((handler.opcode >> SEVEN) & LSBit);
+        handler.DEC = ((handler.opcode >> EIGHT) & LSBit);
+        handler.PRPO = ((handler.opcode >> NINE) & LSBit);
+        handler.UI = 25;
+        break;
+    case 1:
+        // This handles decoding data for instruction - ST
+        handler.dest = (handler.opcode & SEVEN);
+        handler.s_c = ((handler.opcode >> THREE) & SEVEN);
+        handler.w_b = ((handler.opcode >> SIX) & LSBit);
+        handler.INC = ((handler.opcode >> SEVEN) & LSBit);
+        handler.DEC = ((handler.opcode >> EIGHT) & LSBit);
+        handler.PRPO = ((handler.opcode >> NINE) & LSBit);
+        handler.UI = 26;
+        break;
+
+    }   
+    execute_input = handler;
+}
+
+void handle_group_LDR_and_STR(Instruction instr)
+{
+    Instruction handler = instr;
+    switch (handler.opcode >> 14)
+    {
+    case TWO:
+        // This handles decoding data for instruction - LDR
+        handler.dest = (handler.opcode & SEVEN);
+        handler.s_c = ((handler.opcode >> THREE) & SEVEN);
+        handler.w_b = ((handler.opcode >> SIX) & LSBit);
+        handler.OFF = ((handler.opcode >> SEVEN) & OFFSET_MASK);
+        handler.UI = 27;
+        break;
+    case THREE:
+        // This handles decoding data for instruction - STR
+        handler.dest = (handler.opcode & SEVEN);
+        handler.s_c = ((handler.opcode >> THREE) & SEVEN);
+        handler.w_b = ((handler.opcode >> SIX) & LSBit);
+        handler.OFF = ((handler.opcode >> SEVEN) & OFFSET_MASK);
+        handler.UI = 28;
+        break;
+    }
+    execute_input = handler;
 }
 
 void display_content(Instruction content)

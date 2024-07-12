@@ -30,12 +30,16 @@ typedef struct {
     unsigned short opcode;//holds the binary equivalent of the bytes from the array
     unsigned short address;
     unsigned char r_c;
+    unsigned char PRPO;
+    unsigned char DEC;
+    unsigned char INC;
     unsigned char w_b;
     unsigned char s_c;
     unsigned char dest;
     unsigned short data; // Data for the MOVH, MOVL, MOVLZ and MOVLS functions
+    signed char OFF;
     unsigned short UI; // Unique Identifier for Instructions
-} Instruction;// Change these to shorts
+} Instruction;
 
 extern Instruction command;
 // This struct is the input for decode
@@ -50,10 +54,12 @@ void display_content_4_SRA_and_RRC(Instruction content);
 void handle_group_40(Instruction instr);
 void handle_group_4C(Instruction instr);
 void handle_group_132(Instruction instr);
-void handle_group_9A4(Instruction instr);
 void handle_group_MOV(Instruction instr);
 void extract_data_and_dest(Instruction* instr_handler);
 void handle_SETCC_and_CLRCC(Instruction instr);
+void handle_group_LD_and_ST(Instruction instr);
+void handle_group_LDR_and_STR(Instruction instr);
+
 // Register functions
 Instruction Copy_IR(unsigned int pc);
 void display_and_process_debug_menu();

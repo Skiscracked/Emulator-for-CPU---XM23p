@@ -25,7 +25,11 @@ extern ProgramStatusWord SETCC, CLRCC;
 
 extern unsigned carry[2][2][2];
 extern unsigned overflow[2][2][2];
+extern unsigned offset_table[2][2][2];
 
+// These variables represent CPU registers for the XM23p
+
+// These are instruction memory registers
 extern unsigned short IMAR;
 extern unsigned short IMBR;
 extern bool ICTRL;
@@ -34,6 +38,13 @@ extern unsigned short LR;
 extern unsigned short SP;
 extern unsigned short Clock;
 
+// These are data memory registers
+extern unsigned short DMAR;
+extern bool DCTRL;
+extern unsigned short DMBR;
+// This is the Effective Address for accessing data memory.
+extern unsigned short EA;
+extern int offset;
 extern union w_b srcnum, dstnum, result;
 // Declaring the variables used in the execute func to access src and dest as bytes/word
 
@@ -55,6 +66,7 @@ void F0();// First stage of fetch
 void F1();// Second stage of fetch
 void D0();// Decode stage
 void E0();// Execute stage
+void E1();// Memory access stage
 void Run_pipeline_continuous();// Running the pipeline in continuous mode
 void Run_pipeline_single();// Running the pipeline in increment mode by incrementing clock
 void IMEM_Controller(unsigned int IMAR, unsigned int ICTRL, unsigned int * IMBR);
@@ -82,6 +94,14 @@ void execute_MOVLS();
 void execute_MOVH();
 void execute_SETCC();
 void execute_CLRCC();
+void Calculate_LD_Indexed();// Function to obtain the EA for LD (both direct and index addressing)
+void Calculate_ST_Indexed();// Function to obtain the EA for ST (both direct and index addressing)
+void Calculate_LDR();// Function to obtain the EA for LDR
+void Calculate_STR();// Function to obtain the EA for STR
+void execute_LD();// Function to execute LD
+void execute_ST();// Function to execute ST
+void execute_LDR();// Function to execute LDR
+void execute_STR();// Function to execute STR
 
 
 void update_psw(unsigned short src, unsigned short dest, unsigned short result, unsigned short wb); // This function updates VNZC

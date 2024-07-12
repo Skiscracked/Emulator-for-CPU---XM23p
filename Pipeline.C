@@ -10,12 +10,15 @@
  Date: 06/20/2024
 */
 unsigned short IMAR, IMBR, IR, Clock;
-bool ICTRL;
+unsigned short DMAR, DMBR, EA;
+bool ICTRL, DCTRL;
 unsigned short ;
 ProgramStatusWord PSW, SETCC, CLRCC;
+int offset;
 
 unsigned carry[2][2][2] = { 0, 0, 1, 0, 1, 0, 1, 1 };
 unsigned overflow[2][2][2] = { 0, 1, 0, 0, 0, 0, 1, 0 };
+unsigned offset_table[2][2][2] = { 0, 0, 2, 1, -2, -1, 0, 0 };
 
 union w_b srcnum, dstnum, result;
 
@@ -53,6 +56,10 @@ void D0()
          handle_group_40(command);// Calling the function passing command, so the starting address of the IMEM can be obtained by handle_group_40
      else if (((command.opcode >> 11) & OPCODE_MASK_MOV) == OPCODE_MASK_MOV)
          handle_group_MOV(command);
+     else if (((command.opcode >> 11) & LOWNIB_MASK) == OPCODE_MASK_LD_ST)
+         handle_group_LD_and_ST(command);
+     else if (((command.opcode >> 14) & TWO) == TWO)
+         handle_group_LDR_and_STR(command);
      else if (command.opcode == OPCODE_NO_INSTRUCTION)
      {
          printf("Program is now ending\n");
@@ -138,8 +145,38 @@ void E0()
     case CLRcc:
         execute_CLRCC();
         break;
+    case LD:
+        Calculate_LD_Indexed();
+        break;
+    case ST:
+        Calculate_ST_Indexed();
+        break;
+    case LDR:
+        Calculate_LDR();
+        break;
+    case STR:
+        Calculate_STR();
+        break;
     }
-    
+}
+
+void E1()
+{
+    switch (execute_input.UI)
+    {
+    case LD:
+        execute_LD();
+        break;
+    case ST:
+        execute_ST();
+        break;
+    case LDR:
+        execute_LDR();
+        break;
+    case STR:
+        execute_STR();
+        break;
+    }
 }
 
 void execute_ADD()
@@ -149,7 +186,7 @@ void execute_ADD()
 
     if (execute_input.w_b)
     {
-        result.byte[LSB] = (dstnum.byte[LSB] + srcnum.byte[LSB]) & LOWBYTES_MASK;
+        result.byte[LSB] = (dstnum.byte[LSB] + srcnum.byte[LSB]) & LOWBYTE_MASK;
         result.byte[MSB] = dstnum.byte[MSB];
         update_psw(srcnum.byte[LSB], dstnum.byte[LSB], result.byte[LSB], execute_input.w_b);
     }
@@ -169,7 +206,7 @@ void execute_ADDC()
 
     if (execute_input.w_b)
     {
-        result.byte[LSB] = (dstnum.byte[LSB] + srcnum.byte[LSB] + PSW.C) & LOWBYTES_MASK;
+        result.byte[LSB] = (dstnum.byte[LSB] + srcnum.byte[LSB] + PSW.C) & LOWBYTE_MASK;
         result.byte[MSB] = dstnum.byte[MSB];
         //Update PSW bit
         update_psw(srcnum.byte[LSB] + PSW.C, dstnum.byte[LSB], result.byte[LSB], execute_input.w_b);
@@ -190,7 +227,7 @@ void execute_SUB()
 
     if (execute_input.w_b)
     {
-        result.byte[LSB] = (~srcnum.byte[LSB] + 1 + dstnum.byte[LSB]) & LOWBYTES_MASK;
+        result.byte[LSB] = (~srcnum.byte[LSB] + 1 + dstnum.byte[LSB]) & LOWBYTE_MASK;
         result.byte[MSB] = dstnum.byte[MSB];
         update_psw(~srcnum.byte[LSB], dstnum.byte[LSB], result.byte[LSB], execute_input.w_b);
     }
@@ -210,7 +247,7 @@ void execute_SUBC()
 
     if (execute_input.w_b)
     {
-        result.byte[LSB] = (dstnum.byte[LSB] + (~srcnum.byte[LSB]) + PSW.C) & LOWBYTES_MASK;
+        result.byte[LSB] = (dstnum.byte[LSB] + (~srcnum.byte[LSB]) + PSW.C) & LOWBYTE_MASK;
         result.byte[MSB] = dstnum.byte[MSB];
         update_psw(~srcnum.byte[LSB] + PSW.C, dstnum.byte[LSB], result.byte[LSB], execute_input.w_b);
     }
@@ -527,6 +564,156 @@ void execute_CLRCC()
     PSW.C = CLRCC.C ? CLEAR : PSW.C;
 }
 
+void Calculate_LD_Indexed()
+{
+    int offset;
+    offset = offset_table[execute_input.DEC][execute_input.INC][execute_input.w_b];
+    switch (execute_input.PRPO)
+    {
+    case 1:
+        reg_file[REG][execute_input.s_c] += offset;
+        EA = reg_file[REG][execute_input.s_c];
+        DMAR = EA;
+        DCTRL = READ;
+        break;
+    case 0:
+        EA = reg_file[REG][execute_input.s_c];
+        DMAR = EA;
+        DCTRL = READ;
+    }
+}
+
+void Calculate_ST_Indexed()
+{
+    offset = offset_table[execute_input.DEC][execute_input.INC][execute_input.w_b];
+    switch (execute_input.PRPO)
+    {
+    case 1:
+        reg_file[REG][execute_input.dest] += offset;
+        EA = reg_file[REG][execute_input.dest];
+        DMAR = EA;
+        DCTRL = WRITE;
+        break;
+    case 0:
+        EA = reg_file[REG][execute_input.dest];
+        DMAR = EA;
+        DCTRL = WRITE;
+        /* 
+        Then in a function called in E1, the function is going to give DMEM, DMBR:
+        DMEM[DMAR] = DMBR. Note this is the word implementation, the byte would need
+        the LSB of the DMBR (use union scrnum or dstnum).
+        */
+    }
+}
+
+void Calculate_LDR()
+{
+    EA = reg_file[REG][execute_input.s_c] + execute_input.OFF;
+    DMAR = EA;
+    DCTRL = READ;
+}
+
+void Calculate_STR()
+{
+    EA = reg_file[REG][execute_input.dest] + execute_input.OFF;
+    DMAR = EA;
+    DCTRL = WRITE;
+}
+
+void execute_LD()
+{
+    if (execute_input.w_b)
+    {
+        DMBR = DMEM.bytmem[DMAR];
+        switch (execute_input.PRPO)
+        {
+        case 1:
+            reg_file[REG][execute_input.dest] = DMBR & LOWBYTE_MASK;
+            break;
+        case 0:
+            reg_file[REG][execute_input.dest] = DMBR & LOWBYTE_MASK;
+            reg_file[REG][execute_input.s_c] += offset;
+            break;
+        }
+    }
+    else
+    {
+        DMBR = DMEM.wrdmem[DMAR>>ONE];
+        switch (execute_input.PRPO)
+        {
+        case 1:
+            reg_file[REG][execute_input.dest] = DMBR;
+            break;
+        case 0:
+            reg_file[REG][execute_input.dest] = DMBR;
+            reg_file[REG][execute_input.s_c] += offset;
+            break;
+        }
+    }
+}
+
+void execute_ST()
+{
+    if (execute_input.w_b)
+    {
+        DMBR = reg_file[REG][execute_input.s_c];
+        switch (execute_input.PRPO)
+        {
+        case 1:
+            DMEM.bytmem[DMAR] = DMBR & LOWBYTE_MASK;
+            break;
+        case 0:
+            DMEM.bytmem[DMAR] = DMBR & LOWBYTE_MASK;
+            reg_file[REG][execute_input.dest] += offset;
+            break;
+        }
+    }
+    else
+    {
+        DMBR = reg_file[REG][execute_input.s_c];
+        switch (execute_input.PRPO)
+        {
+        case 1:
+            DMEM.wrdmem[DMAR>>ONE] = DMBR;
+            break;
+        case 0:
+            DMEM.wrdmem[DMAR>>ONE] = DMBR;
+            reg_file[REG][execute_input.dest] += offset;
+            break;
+        }
+    }
+}
+
+void execute_LDR()
+{
+    /*
+    You load from a memory location to a register
+    V1 equ $2
+     i.e. LDR R0,V1,R1
+     R1 <- mem[R0 + V1(2)]
+     
+     */
+    
+    if (execute_input.w_b)
+    {
+        DMBR = DMEM.bytmem[DMAR];
+        reg_file[REG][execute_input.dest] = DMBR & LOWBYTE_MASK;
+    }
+    else
+    {
+        DMBR = DMEM.wrdmem[DMAR>>ONE];
+        reg_file[REG][execute_input.dest] = DMBR;
+    }
+}
+
+void execute_STR()
+{
+    if (execute_input.w_b)
+        DMEM.wrdmem[DMAR] = reg_file[REG][execute_input.s_c] & LOWBYTE_MASK;
+    else
+        DMEM.wrdmem[DMAR] = reg_file[REG][execute_input.s_c];
+}
+
 
 void update_psw(unsigned short src, unsigned short dest, unsigned short result, unsigned short wb)
 {
@@ -601,6 +788,7 @@ void Run_pipeline_continuous()
         
         if (EVEN_CLK)
         {
+            E1();
             F0();
             D0();
             printf("%d\t%04X\t%04X\t\tF0: %04X\tD0: %04X\n", Clock, IMAR, IMBR, IMAR, IR);
@@ -630,6 +818,7 @@ void Run_pipeline_single()
         
     if (EVEN_CLK)
     {
+        E1();
         F0();
         D0();
         printf("%d\t%04X\t%04X\t\tF0: %04X\tD0: %04X\n", Clock, IMAR, IMBR, IMAR, IR);

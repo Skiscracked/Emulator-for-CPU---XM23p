@@ -5,6 +5,8 @@
  Course: ECED 3401
  Prepared for: Dr Hughes
  Purpose: Creating a loader for the pipelined XM23. This is the header file.
+ This header file also contains general variables used throughout this program.
+ It acts as the main header file for all .h modules.
  Date: 06/20/2024
 */
 #ifndef LOADER_H
