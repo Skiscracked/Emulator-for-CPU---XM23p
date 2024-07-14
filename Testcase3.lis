@@ -1,44 +1,45 @@
 X-Makina Assembler - Version XM-23P Single Pass+ Assembler - Release 24.04.17
 Input file name: Testcase3.asm
-Time of assembly: Tue 2 Jul 2024 00:36:20 
+Time of assembly: Sat 13 Jul 2024 01:51:26 
   1	    	     	; Sample Assembly Program to Test the XM23p Pipeline
   2	    	     	; Author: Semilore Kayode
   3	    	     	; Date: 29/06/2024
   4	    	     	
-  5	    	     	    code
-  6	    	     	    org #1000
-  7	    	     	
-  8	    	     	; Initialize registers
-  9	    	     	;
- 10	    	     	Main
- 11	1000	6008	    movl #1,R0     
- 12	1002	7800	    movh #1,R0     ; Load 0x01 into R0
- 13	1004	6011	    movl #2,R1     
- 14	1006	7801	    movh #2,R1     ; Load 0x02 into R1
- 15	1008	601A	    movl #3,R2     
- 16	100A	7802	    movh #3,R2     ; Load 0x03 into R2
- 17	100C	6023	    movl #4,R3     
- 18	100E	7803	    movh #4,R3     ; Load 0x04 into R3
- 19	1010	602C	    movl #5,R4     
- 20	1012	7804	    movh #5,R4     ; Load 0x05 into R4
- 21	    	     	
- 22	    	     	    ; Arithmetic operations
- 23	1014	4001	    add R0,R1           ; R1 = R1 + R0 (0x02 + 0x01 = 0x03)
- 24	1016	420A	    sub R1,R2           ; R1 = R1 - R2 (0x03 - 0x03 = 0x00)
- 25	1018	4113	    addc R2,R3          ; R2 = R2 + R3 + Carry (0x03 + 0x04 + 0 = 0x07)
- 26	101A	431C	    subc R3,R4          ; R3 = R3 - R4 - Carry (0x04 - 0x05 - 0 = 0xFFFF)
- 27	    	     	
- 28	    	     	    ; Logical operations
- 29	101C	4702	    and R0,R2           ; R2 = R2 & R0 (0x07 & 0x01 = 0x01)
- 30	101E	480B	    or R1,R3            ; R3 = R3 | R1 (0xFFFF | 0x03 = 0xFFFF)
- 31	1020	4604	    xor R0,R4           ; R0 = R0 ^ R4 (0x01 ^ 0x05 = 0x04)
+  5	    	     	    V0 equ #0
+  6	    	     	    V2 equ #2
+  7	    	     	    V4 equ #4
+  8	    	     	    V6 equ #6
+  9	    	     	    V10 equ #10
+ 10	    	     	    DATA
+ 11	    	     	    org #0100
+ 12	    	     	;
+ 13	0100	ABCD	    Data1 word #ABCD
+ 14	0102	FFFF	    Data2 word #FFFF
+ 15	    	     	;
+ 16	    	     	    CODE
+ 17	    	     	    org #2000
+ 18	    	     	
+ 19	    	     	Main
+ 20	2000	6000	    movl Data1,R0     
+ 21	2002	7808	    movh Data1,R0     ; R0 = 0100
+ 22	    	     	
+ 23	2004	5801	    ld R0,R1          ; R1 <- mem[R0]. R1 = #ABCD
+ 24	2006	5842	    ld.b R0,R2        ; R2 <- mem[R0]. R2 = #CD
+ 25	2008	4098	    add #4,R0         ; R0 = 0104
+ 26	200A	5C08	    st R1,R0          ; mem[0104] = #ABCD
+ 27	200C	4090	    add #2,R0         ; R0 = 0106
+ 28	200E	5C50	    st.b R2,R0        ; mem[0106] = #CD
+ 29	    	     	
+ 30	2010	6010	    movl Data2,R0
+ 31	2012	7808	    movh Data2,R0     ; R0 = 0102
  32	    	     	
- 33	    	     	    ; Decimal Add operation
- 34	1022	6095	    movl #12,R5       ; Load 0x12 into R5
- 35	1024	61A6	    movl #34,R6       ; Load 0x34 into R6
- 36	1026	442E	    dadd R5,R6          ; R6 = R6 + R5 in BCD (0x12 + 0x34 = 0x46)
+ 33	2014	8001	    ldr R0,V0,R1      ; R1 = mem[R0 + 0] (#FFFF)
+ 34	2016	C308	    str R1,R0,V6      ; mem[R0 + 6](0108) = R1 (#FFFF)
+ 35	2018	8043	    ldr.b R0,V0,R3    ; R3 = mem[R0 + 0] = #FF
+ 36	201A	C858	    str.b R3,R0,V10   ; mem[R0 + V10](0112) = #FF
  37	    	     	
- 38	    	     	    end Main
+ 38	    	     	
+ 39	    	     	    end Main
 
 Successful completion of assembly - 1P
 
@@ -46,13 +47,20 @@ Successful completion of assembly - 1P
 
 Constants (Equates)
 Name                               	Type	Value	Decimal
+V10                                	CON	0010	16	PRI
+V6                                 	CON	0006	6	PRI
+V4                                 	CON	0004	4	PRI
+V2                                 	CON	0002	2	PRI
+V0                                 	CON	0000	0	PRI
 
 Labels (Code)
 Name                               	Type	Value	Decimal
-Main                               	REL	1000	4096	PRI
+Main                               	REL	2000	8192	PRI
 
 Labels (Data)
 Name                               	Type	Value	Decimal
+Data2                              	REL	0102	258	PRI
+Data1                              	REL	0100	256	PRI
 
 Registers
 Name                               	Type	Value	Decimal

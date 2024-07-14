@@ -1,10 +1,10 @@
 X-Makina Assembler - Version XM-23P Single Pass+ Assembler - Release 24.04.17
 Input file name: Testcase2.asm
-Time of assembly: Tue 4 Jun 2024 23:43:52 
+Time of assembly: Fri 12 Jul 2024 23:59:48 
   1	    	     	;
   2	    	     	; Test Case 2: Handle Group 40 Instructions
   3	    	     	; ECED 3403
-  4	    	     	; Date: Today
+  4	    	     	; Date: 12/07/2024
   5	    	     	;
   6	    	     	
   7	    	     	    CODE
@@ -13,50 +13,49 @@ Time of assembly: Tue 4 Jun 2024 23:43:52
  10	    	     	; Initialize registers
  11	    	     	;
  12	    	     	Main
- 13	1000	6A00	    movlz  Array,R0  ; Load address of the array into R0
- 14	1002	5803	    ld     R0,R3      ; Load stopper into R3
- 15	1004	4090	    add    #2,R0      ; Move R0 to the next element
- 16	1006	4C0A	    mov    R1,R2      ; Setting R2 as sum register and making it 0
- 17	    	     	
- 18	    	     	    ; Group 40 Instructions
- 19	1008	400A	    add    R1,R2      ; ADD R1 to R2
- 20	100A	410A	    addc   R1,R2      ; ADD with Carry R1 to R2
- 21	100C	420A	    sub    R1,R2      ; SUB R1 from R2
- 22	100E	430A	    subc   R1,R2      ; SUB with Carry R1 from R2
- 23	1010	440A	    dadd   R1,R2      ; Decimal ADD R1 to R2
- 24	1012	450A	    cmp    R1,R2      ; Compare R1 with R2
- 25	1014	460A	    xor    R1,R2      ; XOR R1 with R2
- 26	1016	470A	    and    R1,R2      ; AND R1 with R2
- 27	1018	480A	    or     R1,R2      ; OR R1 with R2
- 28	101A	490A	    bit    R1,R2      ; BIT test R1 with R2
- 29	101C	4A0A	    bic    R1,R2      ; BIC (Bit Clear) R1 from R2
- 30	101E	4B0A	    bis    R1,R2      ; BIS (Bit Set) R1 to R2
- 31	    	     	
- 32	    	     	; Completed
- 33	    	     	;
- 34	    	     	BraWait
- 35	1020	3FFF	    bra BraWait        ; Infinite loop to halt the program
- 36	    	     	
- 37	    	     	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
- 38	    	     	;
- 39	    	     	; Data space
- 40	    	     	;
- 41	    	     	    DATA
- 42	    	     	    org #40
- 43	    	     	
- 44	    	     	; Array
- 45	    	     	;
- 46	    	     	Array
- 47	0040	0000	    word  #0
- 48	0042	0001	    word  #1
- 49	0044	0001	    word  #1
- 50	0046	0001	    word  #1
- 51	0048	0001	    word  #1
- 52	004A	0001	    word  #1
- 53	    	     	
- 54	    	     	; Storage for the sum result
- 55	    	     	;
- 56	    	     	    end Main
+ 13	1000	6A00	    movlz  Array,R0  ; Load address of the array into R0. R0 = 0x0040
+ 14	1002	5803	    ld     R0,R3      ; R3 <- mem[R0](0040). R3 = #5
+ 15	1004	4090	    add    #2,R0      ; Move R0 to the next element. R0 = 0x0042
+ 16	1006	5801	    ld     R0,R1      ; R1 <- mem[R0](0x0042). R1 = #1
+ 17	1008	5A82	    ld     +R0,R2     ; R0 = 0x0044. R2 <- mem[R0]. R2 = #2
+ 18	    	     	
+ 19	    	     	    ; Group 40 Instructions
+ 20	100A	400A	    add    R1,R2      ; ADD R1 to R2. R2 = #3
+ 21	100C	410A	    addc   R1,R2      ; ADD with Carry R1 to R2. R2 = #4
+ 22	100E	420A	    sub    R1,R2      ; SUB R1 from R2. R2 = #3
+ 23	1010	430A	    subc   R1,R2      ; SUB with Carry R1 from R2
+ 24	1012	440A	    dadd   R1,R2      ; Decimal ADD R1 to R2
+ 25	1014	450A	    cmp    R1,R2      ; Compare R1 with R2
+ 26	1016	460A	    xor    R1,R2      ; XOR R1 with R2
+ 27	1018	470A	    and    R1,R2      ; AND R1 with R2
+ 28	101A	480A	    or     R1,R2      ; OR R1 with R2
+ 29	101C	490A	    bit    R1,R2      ; BIT test R1 with R2
+ 30	101E	4A0A	    bic    R1,R2      ; BIC (Bit Clear) R1 from R2
+ 31	1020	4B0A	    bis    R1,R2      ; BIS (Bit Set) R1 to R2
+ 32	    	     	
+ 33	    	     	; Completed
+ 34	    	     	;
+ 35	    	     	BraWait
+ 36	1022	3FFF	    bra BraWait        ; Infinite loop to halt the program
+ 37	    	     	
+ 38	    	     	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ 39	    	     	;
+ 40	    	     	; Data space
+ 41	    	     	;
+ 42	    	     	    DATA
+ 43	    	     	    org #40
+ 44	    	     	
+ 45	    	     	; Array
+ 46	    	     	;
+ 47	    	     	Array
+ 48	0040	0005	    word  #5
+ 49	0042	0001	    word  #1
+ 50	0044	0002	    word  #2
+ 51	0046	0003	    word  #3
+ 52	0048	0004	    word  #4
+ 53	004A	0005	    word  #5
+ 54	    	     	;
+ 55	    	     	    end Main
 
 Successful completion of assembly - 2P
 
@@ -67,7 +66,7 @@ Name                               	Type	Value	Decimal
 
 Labels (Code)
 Name                               	Type	Value	Decimal
-BraWait                            	REL	1020	4128	PRI
+BraWait                            	REL	1022	4130	PRI
 Main                               	REL	1000	4096	PRI
 
 Labels (Data)

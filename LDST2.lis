@@ -1,0 +1,83 @@
+X-Makina Assembler - Version XM-23P Single Pass+ Assembler - Release 24.04.17
+Input file name: LDST2.asm
+Time of assembly: Sat 13 Jul 2024 21:49:50 
+  1	    	     	;
+  2	    	     	; Example of direct addressing #2
+  3	    	     	; Load and store
+  4	    	     	;
+  5	    	     	; V2 <- V1 + 2
+  6	    	     	;
+  7	    	     		data
+  8	    	     		org	#100
+  9	0100	FFFD	V1	word	#FFFD
+ 10	0102	0000	V2	word	#0
+ 11	    	     	;
+ 12	    	     		code
+ 13	    	     		org	#200
+ 14	    	     	LDST2
+ 15	    	     	;
+ 16	    	     	; Get address of V1 into R0
+ 17	    	     	;
+ 18	0200	6000		movl	V1,R0		; R0 = #??00
+ 19	0202	7808		movh	V1,R0		; R0 = #0100
+ 20	    	     	;
+ 21	    	     	; R1 <- mem[R0]
+ 22	    	     	;
+ 23	    	     	; R0 contains the effective address
+ 24	    	     	; mem[R0] is rvalue
+ 25	    	     	; R1 is lvalue
+ 26	    	     	;
+ 27	    	     	; LD from-memory (rvalue),to-register (lvalue)
+ 28	    	     	;
+ 29	0204	5801		LD	R0,R1		; R1 <- #FFFD
+ 30	    	     	;
+ 31	0206	4091		ADD	#2,R1		; R1 <- R1 + 2
+ 32	    	     	;
+ 33	    	     	; Store in V2:
+ 34	    	     	;
+ 35	    	     	; Get address of V2 into R0
+ 36	    	     	;
+ 37	0208	6010		movl	V2,R0		; R0 = #??00
+ 38	020A	7808		movh	V2,R0		; R0 = #0102
+ 39	    	     	;
+ 40	    	     	; R0 contains the effective address 
+ 41	    	     	; mem[R0] <- R1
+ 42	    	     	; 
+ 43	020C	5C08		ST	R1,R0
+ 44	    	     	;
+ 45	    	     	; Put breakpoint on next address
+ 46	    	     	;
+ 47	    	     	BrkPtHere
+ 48	    	     	;
+ 49	    	     		end LDST2
+
+Successful completion of assembly - 1P
+
+** Symbol table **
+
+Constants (Equates)
+Name                               	Type	Value	Decimal
+
+Labels (Code)
+Name                               	Type	Value	Decimal
+BrkPtHere                          	REL	020E	526	PRI
+LDST2                              	REL	0200	512	PRI
+
+Labels (Data)
+Name                               	Type	Value	Decimal
+V2                                 	REL	0102	258	PRI
+V1                                 	REL	0100	256	PRI
+
+Registers
+Name                               	Type	Value	Decimal
+R7                                 	REG	0007	7	PRI
+R6                                 	REG	0006	6	PRI
+R5                                 	REG	0005	5	PRI
+R4                                 	REG	0004	4	PRI
+R3                                 	REG	0003	3	PRI
+R2                                 	REG	0002	2	PRI
+R1                                 	REG	0001	1	PRI
+R0                                 	REG	0000	0	PRI
+
+.XME file: C:\Users\semil\OneDrive\Documents(main)\School work\3rd year SK\Comp Arch\Assembler\LDST2.xme
+

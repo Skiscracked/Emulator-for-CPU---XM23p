@@ -1,7 +1,7 @@
 ;
 ; Test Case 2: Handle Group 40 Instructions
 ; ECED 3403
-; Date: Today
+; Date: 12/07/2024
 ;
 
     CODE
@@ -10,15 +10,16 @@
 ; Initialize registers
 ;
 Main
-    movlz  Array,R0  ; Load address of the array into R0
-    ld     R0,R3      ; Load stopper into R3
-    add    #2,R0      ; Move R0 to the next element
-    mov    R1,R2      ; Setting R2 as sum register and making it 0
+    movlz  Array,R0  ; Load address of the array into R0. R0 = 0x0040
+    ld     R0,R3      ; R3 <- mem[R0](0040). R3 = #5
+    add    #2,R0      ; Move R0 to the next element. R0 = 0x0042
+    ld     R0,R1      ; R1 <- mem[R0](0x0042). R1 = #1
+    ld     +R0,R2     ; R0 = 0x0044. R2 <- mem[R0]. R2 = #2
 
     ; Group 40 Instructions
-    add    R1,R2      ; ADD R1 to R2
-    addc   R1,R2      ; ADD with Carry R1 to R2
-    sub    R1,R2      ; SUB R1 from R2
+    add    R1,R2      ; ADD R1 to R2. R2 = #3
+    addc   R1,R2      ; ADD with Carry R1 to R2. R2 = #4
+    sub    R1,R2      ; SUB R1 from R2. R2 = #3
     subc   R1,R2      ; SUB with Carry R1 from R2
     dadd   R1,R2      ; Decimal ADD R1 to R2
     cmp    R1,R2      ; Compare R1 with R2
@@ -44,13 +45,11 @@ BraWait
 ; Array
 ;
 Array
-    word  #0
+    word  #5
     word  #1
-    word  #1
-    word  #1
-    word  #1
-    word  #1
-
-; Storage for the sum result
+    word  #2
+    word  #3
+    word  #4
+    word  #5
 ;
     end Main

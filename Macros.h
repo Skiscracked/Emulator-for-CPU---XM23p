@@ -92,8 +92,4 @@
 // Defining some commonly used values
 
 
-#define LD_DIRECT_ADDRESSING 0xB0
-#define ST_DIRECT_ADDRESSING 0xB8
-
-
 #endif // !

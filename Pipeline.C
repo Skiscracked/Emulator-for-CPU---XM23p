@@ -30,11 +30,6 @@ void F0()
 
 	PC += PC_INCREMENT;
     reg_file[0][REG_INDEX_PC] = PC; // Giving register 7 the value of PC. To update R7 and for debugging purposes
-
-    /*printf("IMAR -> %x\n", IMAR);
-    printf("Start: Clk: %d PC: %04X ", Clock, PC);
-    printf("PSW: %x%x%x%x ", PSW.V, PSW.N, PSW.Z, PSW.C);
-    printf("Brkpnt: %04X \n", breakpoint);*/
 }
 
 void F1()
@@ -162,6 +157,7 @@ void E0()
 
 void E1()
 {
+    printf("%d\t\t\t\t\t\t\t\tE1: %04X\n", Clock, execute_input.opcode);
     switch (execute_input.UI)
     {
     case LD:
@@ -566,7 +562,6 @@ void execute_CLRCC()
 
 void Calculate_LD_Indexed()
 {
-    int offset;
     offset = offset_table[execute_input.DEC][execute_input.INC][execute_input.w_b];
     switch (execute_input.PRPO)
     {
@@ -709,9 +704,9 @@ void execute_LDR()
 void execute_STR()
 {
     if (execute_input.w_b)
-        DMEM.wrdmem[DMAR] = reg_file[REG][execute_input.s_c] & LOWBYTE_MASK;
+        DMEM.bytmem[DMAR] = reg_file[REG][execute_input.s_c] & LOWBYTE_MASK;
     else
-        DMEM.wrdmem[DMAR] = reg_file[REG][execute_input.s_c];
+        DMEM.wrdmem[DMAR>>ONE] = reg_file[REG][execute_input.s_c];
 }
 
 
@@ -788,6 +783,7 @@ void Run_pipeline_continuous()
         
         if (EVEN_CLK)
         {
+            if (execute_input.UI == LD || execute_input.UI == ST || execute_input.UI == LDR || execute_input.UI == STR)
             E1();
             F0();
             D0();
@@ -818,6 +814,7 @@ void Run_pipeline_single()
         
     if (EVEN_CLK)
     {
+        if (execute_input.UI == LD || execute_input.UI == ST || execute_input.UI == LDR || execute_input.UI == STR)
         E1();
         F0();
         D0();
