@@ -94,7 +94,6 @@ void writeDataToMemory(union mem *memoryType, unsigned int address, unsigned cha
 
 void setProgramCounter(unsigned int address) {
     PC = address; // Giving the PC the starting address of the IMEM
-    reg_file[0][7] = PC; // Giving register 7 the value of PC.
     printf("Program Counter set to start at 0x%04X\n", address);
 }
 

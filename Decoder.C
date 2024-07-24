@@ -313,6 +313,7 @@ void handle_group_LDR_and_STR(Instruction instr)
         handler.s_c = ((handler.opcode >> THREE) & SEVEN);
         handler.w_b = ((handler.opcode >> SIX) & LSBit);
         handler.OFF = ((handler.opcode >> SEVEN) & OFFSET_MASK);
+        sign_extend_7bit(&handler.OFF);
         handler.UI = 27;
         break;
     case THREE:
@@ -321,9 +322,54 @@ void handle_group_LDR_and_STR(Instruction instr)
         handler.s_c = ((handler.opcode >> THREE) & SEVEN);
         handler.w_b = ((handler.opcode >> SIX) & LSBit);
         handler.OFF = ((handler.opcode >> SEVEN) & OFFSET_MASK);
+        sign_extend_7bit(&handler.OFF);
         handler.UI = 28;
         break;
     }
+    execute_input = handler;
+}
+
+void handle_BL(Instruction instr)
+{ // Handles instruction BL - Branch with link
+    Instruction handler = instr;
+    handler.OFF_13bit = (handler.opcode & BL_OFFSET_MASK);
+    sign_extend_13bit(&handler.OFF_13bit);
+    handler.UI = 29;
+    execute_input = handler;
+}
+
+void handle_BRANCH_group(Instruction instr)
+{ // Handles instructions from BEQ - BRA
+    Instruction handler = instr;
+    switch (handler.opcode >> TEN)
+    {
+    case EIGHT: // BEQ/BZ
+        handler.UI = 30;
+        break;
+    case NINE:// BNE/BNZ
+        handler.UI = 31;
+        break;
+    case TEN: // BC/BHS
+        handler.UI = 32;
+        break;
+    case ELEVEN: // BNC/BLO
+        handler.UI = 33;
+        break;
+    case TWELVE: // BN
+        handler.UI = 34;
+        break;
+    case THIRTEEN: // BGE
+        handler.UI = 35;
+        break;
+    case FOURTEEN: // BLT
+        handler.UI = 36;
+        break;
+    case FIFTEEN: // BRA
+        handler.UI = 37;
+        break;
+    }
+    handler.OFF_10bit = (handler.opcode & BRANCH_MASK);
+    sign_extend_10bit(&handler.OFF_10bit);
     execute_input = handler;
 }
 
@@ -336,12 +382,6 @@ void display_content(Instruction content)
 
 
     execute_input = content;// After decoding instruction output, it to the input for execute
-
-    /*if (content.r_c == 0)
-        printf(" RC: %d WB: %d SRC: R%d DST: R%d\n", content.r_c, content.w_b, content.s_c, content.dest);
-
-    else if (content.r_c == 1)
-        printf(" RC: %d WB: %d CON: %d DST: R%d\n", content.r_c, content.w_b, content.s_c, content.dest);*/
 }
 
 void display_content_4_SRA_and_RRC(Instruction content)
@@ -353,6 +393,45 @@ void display_content_4_SRA_and_RRC(Instruction content)
         printf(" WB: %d DST: R%d\n", content.w_b, content.dest);*/
 
     execute_input = content;// After decoding instruction, output it to the input for execute
+}
+
+void sign_extend_7bit(signed char *off)
+{
+    if (SIGN(*off)) //MSB = 1
+    // If it's a negative number
+    {
+        *off = (*off) | 0x80;
+    }
+    else
+    {
+        *off = *off & 0x003F;
+    }
+}
+
+void sign_extend_13bit(signed short* OFF_13bit)
+{
+    if (SIGN_13(*OFF_13bit)) // If MSB == 1
+    { // If it's a negative number
+        *OFF_13bit = *OFF_13bit | 0xF000;
+    }
+    else // If MSB == 0
+    {
+        *OFF_13bit = *OFF_13bit & 0x1FFF;
+    }
+    *OFF_13bit = *OFF_13bit << 1;
+}
+
+void sign_extend_10bit(signed short *OFF_10bit)
+{
+    if (SIGN_10(*OFF_10bit)) // If MSB == 1
+    { // If it's a negative number
+        *OFF_10bit = *OFF_10bit | 0xFC00;
+    }
+    else // If MSB == 0
+    {
+        *OFF_10bit = *OFF_10bit & 0x03FF;
+    }
+    *OFF_10bit = *OFF_10bit << 1;
 }
 
 void display_and_process_debug_menu()

@@ -67,6 +67,7 @@ void F1();// Second stage of fetch
 void D0();// Decode stage
 void E0();// Execute stage
 void E1();// Memory access stage
+void bubble(); // Function to clear D0 and E0 getting rid of Data Hazards
 void Run_pipeline_continuous();// Running the pipeline in continuous mode
 void Run_pipeline_single();// Running the pipeline in increment mode by incrementing clock
 void IMEM_Controller(unsigned int IMAR, unsigned int ICTRL, unsigned int * IMBR);
@@ -102,6 +103,15 @@ void execute_LD();// Function to execute LD
 void execute_ST();// Function to execute ST
 void execute_LDR();// Function to execute LDR
 void execute_STR();// Function to execute STR
+void execute_BL();
+void execute_BEQ_BZ();
+void execute_BNE_BNZ();
+void execute_BC_BHS();
+void execute_BNC_BLO();
+void execute_BN();
+void execute_BGE();
+void execute_BLT();
+void execute_BRA();
 
 
 void update_psw(unsigned short src, unsigned short dest, unsigned short result, unsigned short wb); // This function updates VNZC
@@ -109,4 +119,6 @@ void update_psw(unsigned short src, unsigned short dest, unsigned short result, 
 void update_psw1(unsigned short result, unsigned short wb); // This function updates NZ using result
 void update_psw2(unsigned short result); // This functions only updates Z using the result
 unsigned short bcd_add(unsigned short nibble_A, unsigned short nibble_B);// Adding the nibbles of the 16 bit word in decimal add
+
+void sigint_hdlr();
 #endif // !

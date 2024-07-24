@@ -12,9 +12,9 @@
 unsigned short IMAR, IMBR, IR, Clock;
 unsigned short DMAR, DMBR, EA;
 bool ICTRL, DCTRL;
-unsigned short ;
 ProgramStatusWord PSW, SETCC, CLRCC;
 int offset;
+volatile sig_atomic_t ctrl_c_fnd; /* T|F - indicates whether ^C detected */
 
 unsigned carry[2][2][2] = { 0, 0, 1, 0, 1, 0, 1, 1 };
 unsigned overflow[2][2][2] = { 0, 1, 0, 0, 0, 0, 1, 0 };
@@ -55,6 +55,10 @@ void D0()
          handle_group_LD_and_ST(command);
      else if (((command.opcode >> 14) & TWO) == TWO)
          handle_group_LDR_and_STR(command);
+     else if ((command.opcode >> 13) == 0)
+         handle_BL(command);
+     else if ((command.opcode >> 13) == ONE)
+         handle_BRANCH_group(command);
      else if (command.opcode == OPCODE_NO_INSTRUCTION)
      {
          printf("Program is now ending\n");
@@ -152,6 +156,33 @@ void E0()
     case STR:
         Calculate_STR();
         break;
+    case BL:
+        execute_BL();
+        break;
+    case BEQ_BZ:
+        execute_BEQ_BZ();
+        break;
+    case BNE_BNZ:
+        execute_BNE_BNZ();
+        break;
+    case BC_BHS:
+        execute_BC_BHS();
+        break;
+    case BNC_BLO:
+        execute_BNC_BLO();
+        break;
+    case BN:
+        execute_BN();
+        break;
+    case BGE:
+        execute_BGE();
+        break;
+    case BLT:
+        execute_BLT();
+        break;
+    case BRA:
+        execute_BRA();
+        break;
     }
 }
 
@@ -173,6 +204,11 @@ void E1()
         execute_STR();
         break;
     }
+}
+
+void bubble()
+{
+    IR = NOP;
 }
 
 void execute_ADD()
@@ -438,6 +474,9 @@ void execute_MOV()
         // For word operation, update the entire destination register
         reg_file[0][execute_input.dest] = srcnum.word;
     }
+
+    if (execute_input.dest == 7)
+        bubble();
 }
 
 void execute_SWAP()
@@ -603,14 +642,20 @@ void Calculate_ST_Indexed()
 
 void Calculate_LDR()
 {
-    EA = reg_file[REG][execute_input.s_c] + execute_input.OFF;
+    if (execute_input.w_b) // If it's a byte
+        EA = reg_file[REG][execute_input.s_c] + execute_input.OFF;
+    else // If it's a word
+        EA = reg_file[REG][execute_input.s_c] + execute_input.OFF & 0xFFFE;
     DMAR = EA;
     DCTRL = READ;
 }
 
 void Calculate_STR()
 {
-    EA = reg_file[REG][execute_input.dest] + execute_input.OFF;
+    if (execute_input.w_b) // If it's a byte
+        EA = reg_file[REG][execute_input.dest] + execute_input.OFF;
+    else // If it's a word
+        EA = (reg_file[REG][execute_input.dest] + execute_input.OFF) & 0xFFFE;
     DMAR = EA;
     DCTRL = WRITE;
 }
@@ -709,6 +754,81 @@ void execute_STR()
         DMEM.wrdmem[DMAR>>ONE] = reg_file[REG][execute_input.s_c];
 }
 
+void execute_BL()
+{
+    LR = PC - TWO;
+    PC = PC - 2 + execute_input.OFF_13bit;
+    bubble();
+}
+
+void execute_BEQ_BZ()
+{
+    if (PSW.Z)
+    {
+        PC = PC - 2 + execute_input.OFF_10bit;
+        bubble();
+    }
+}
+
+void execute_BNE_BNZ()
+{
+    if (!PSW.Z)
+    {
+        PC = PC - 2 + execute_input.OFF_10bit;
+        bubble();
+    }
+}
+
+void execute_BC_BHS()
+{
+    if (PSW.C)
+    {
+        PC = PC - 2 + execute_input.OFF_10bit;
+        bubble();
+    }
+}
+
+void execute_BNC_BLO()
+{
+    if (!PSW.C)
+    {
+        PC = PC - 2 + execute_input.OFF_10bit;
+        bubble();
+    }
+}
+
+void execute_BN()
+{
+    if (PSW.N)
+    {
+        PC = PC - 2 + execute_input.OFF_10bit;
+        bubble();
+    }
+}
+
+void execute_BGE()
+{
+    if (PSW.N == PSW.V)
+    {
+        PC = PC - 2 + execute_input.OFF_10bit;
+        bubble();
+    }
+}
+
+void execute_BLT()
+{
+    if (PSW.N != PSW.V)
+    {
+        PC = PC - 2 + execute_input.OFF_10bit;
+        bubble();
+    }
+}
+
+void execute_BRA()
+{
+    PC = PC - 2 + execute_input.OFF_10bit;
+    bubble();
+}
 
 void update_psw(unsigned short src, unsigned short dest, unsigned short result, unsigned short wb)
 {
@@ -771,8 +891,11 @@ unsigned short bcd_add(unsigned short nibble_A, unsigned short nibble_B)
 
 void Run_pipeline_continuous() 
 {// IMAR becomes zero after every odd clock tick why??
+
+    ctrl_c_fnd = FALSE;
+    signal(SIGINT, (_crt_signal_t)sigint_hdlr);
     printf("Clock\tPC\tInstruction\tFetch\t\tDecode\t\tExecute\t\tPSW\n");
-    while (BKPNT_CHECK != breakpoint)
+    while (BKPNT_CHECK != breakpoint && !ctrl_c_fnd)
     {
         if (ZERO_CLK)
         {
@@ -796,10 +919,8 @@ void Run_pipeline_continuous()
             printf("%d\t\t\t\tF1: %04X\t\t\tE0: %04X", Clock, IMBR, execute_input.opcode);
             printf("\t%x%x%x%x \n", PSW.V, PSW.N, PSW.Z, PSW.C);
         }
-        
         Clock++;
     }
-
 }
 
 void Run_pipeline_single()
@@ -831,3 +952,13 @@ void Run_pipeline_single()
     Clock++;
 }
 
+void sigint_hdlr()
+{
+    /*
+    - Invoked when SIGINT (control-C) is detected
+    - changes state of waiting_for_signal
+    - signal must be reinitialized
+    */
+    ctrl_c_fnd = TRUE;
+    signal(SIGINT, (_crt_signal_t)sigint_hdlr); /* Reinitialize SIGINT */
+}

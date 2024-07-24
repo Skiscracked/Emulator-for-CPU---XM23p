@@ -22,6 +22,7 @@
 #include "Decoder.h"
 #include "Pipeline.h"
 #include "Macros.h"
+#include <signal.h> /* Signal handling software */
 
 //Memory size
 #define MEM_SIZE 65536
@@ -41,6 +42,8 @@ extern union mem IMEM;
 extern union mem DMEM;
 
 extern bool single_step_mode;
+
+extern volatile sig_atomic_t ctrl_c_fnd; /* T|F - indicates whether ^C detected */
 
 union mem {
 	unsigned short wrdmem[WRDMEMSIZE];

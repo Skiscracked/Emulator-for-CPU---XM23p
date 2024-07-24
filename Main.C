@@ -6,7 +6,7 @@
 */
 #include "Loader.h"
 
-unsigned short starting_address, IMEM_SA, PC;
+unsigned short starting_address, IMEM_SA;
 
 union mem IMEM = { 0 };
 union mem DMEM = { 0 };

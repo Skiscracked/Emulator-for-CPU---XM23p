@@ -21,9 +21,13 @@
 #define OPCODE_NO_INSTRUCTION 0x0000 // NO Instruction detected
 #define OFFSET_MASK 0x7F // Macro to mask offset
 #define REG_INDEX_PC 7
+#define PC reg_file[REG][7]
+#define LR reg_file[REG][5]
 #define PC_INCREMENT 2
 #define REG 0
 
+#define BL_OFFSET_MASK 0x1FFF // Macro to mask the offset of instruction BL
+#define BRANCH_MASK 0x3FF // Macro to mask the offset of the branch instructions
 
 // Defining UI(Unique Identifiers) for the different execute functions
 #define ADD 1
@@ -54,6 +58,15 @@
 #define ST 26
 #define LDR 27
 #define STR 28
+#define BL 29
+#define BEQ_BZ 30
+#define BNE_BNZ 31
+#define BC_BHS 32
+#define BNC_BLO 33
+#define BN 34
+#define BGE 35
+#define BLT 36
+#define BRA 37
 
 // Defining a macro that represents a breakpoint check
 #define BKPNT_CHECK (IMAR + 2)
@@ -79,6 +92,14 @@
 #define READ 0
 #define WRITE 1
 
+#define TRUE 1
+#define FALSE 0
+
+#define FIFTEEN 15
+#define FOURTEEN 14
+#define THIRTEEN 13
+#define TWELVE 12
+#define ELEVEN 11
 #define TEN 10
 #define NINE 9
 #define EIGHT 8
@@ -91,5 +112,7 @@
 #define ONE 1
 // Defining some commonly used values
 
-
+#define SIGN(x) (x>>6)
+#define SIGN_13(x) (x>>12)
+#define SIGN_10(x) (x>>9)
 #endif // !
