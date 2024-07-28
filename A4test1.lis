@@ -1,0 +1,83 @@
+X-Makina Assembler - Version XM-23P Single Pass+ Assembler - Release 24.04.17
+Input file name: A4test1.asm
+Time of assembly: Sat 27 Jul 2024 01:37:06 
+  1	    	     	; Sample Assembly Program to Test the XM23p Pipeline
+  2	    	     	; Author: Semilore Kayode
+  3	    	     	; Test of BEQ and BNE
+  4	    	     	; Date: 05/07/2024
+  5	    	     	;
+  6	    	     	
+  7	    	     	;
+  8	    	     	PC    equ    R7
+  9	    	     	SP    equ    R6
+ 10	    	     	LR    equ    R5
+ 11	    	     	NUL   equ    '\0'
+ 12	    	     	;
+ 13	    	     	; Code segment
+ 14	    	     	;
+ 15	    	     	    Code
+ 16	    	     	    org    #1000
+ 17	    	     	
+ 18	    	     	Start
+ 19	1000	6800	    movlz    #0,R0    ; Initialize R0 to 0
+ 20	1002	6809	    movlz    #1,R1    ; Initialize R1 to 1
+ 21	    	     	
+ 22	    	     	TestBNE
+ 23	1004	4541	    cmp.b    R0,R1
+ 24	1006	2406	    bne      NotEqual   ; Branch if R0 == R1
+ 25	1008	6812	    movlz    #2,R2    ; This should not execute
+ 26	    	     	
+ 27	    	     	TestBEQ
+ 28	100A	4540	    cmp.b    R0,R0
+ 29	100C	2001	    beq      Equal    ; Branch if R0 != R0
+ 30	100E	681B	    movlz    #3,R3    ; This should not execute
+ 31	    	     	
+ 32	    	     	Equal
+ 33	1010	6824	    movlz    #4,R4    ; R4 = 4 if branch taken
+ 34	1012	3C01	    bra DONE
+ 35	    	     	
+ 36	    	     	NotEqual
+ 37	1014	682D	    movlz    #5,R5    ; R5 = 5 if branch taken
+ 38	    	     	
+ 39	    	     	DONE
+ 40	1016	3FFF	    bra DONE          ; Iniinte loop until control C
+ 41	    	     	                      ; Because we don't want the emulator decoding 0 ~ BL
+ 42	    	     	
+ 43	    	     	    end    Start
+
+Successful completion of assembly - 2P
+
+** Symbol table **
+
+Constants (Equates)
+Name                               	Type	Value	Decimal
+NUL                                	CON	0000	0	PRI
+
+Labels (Code)
+Name                               	Type	Value	Decimal
+DONE                               	REL	1016	4118	PRI
+Equal                              	REL	1010	4112	PRI
+TestBEQ                            	REL	100A	4106	PRI
+NotEqual                           	REL	1014	4116	PRI
+TestBNE                            	REL	1004	4100	PRI
+Start                              	REL	1000	4096	PRI
+
+Labels (Data)
+Name                               	Type	Value	Decimal
+
+Registers
+Name                               	Type	Value	Decimal
+LR                                 	REG	0005	5	PRI
+SP                                 	REG	0006	6	PRI
+PC                                 	REG	0007	7	PRI
+R7                                 	REG	0007	7	PRI
+R6                                 	REG	0006	6	PRI
+R5                                 	REG	0005	5	PRI
+R4                                 	REG	0004	4	PRI
+R3                                 	REG	0003	3	PRI
+R2                                 	REG	0002	2	PRI
+R1                                 	REG	0001	1	PRI
+R0                                 	REG	0000	0	PRI
+
+.XME file: C:\Users\semil\OneDrive\Documents(main)\School work\3rd year SK\Comp Arch\Assembler\A4test1.xme
+

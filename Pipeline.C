@@ -322,13 +322,11 @@ void execute_CMP()
     {
         result.byte[LSB] = dstnum.byte[LSB] + (~srcnum.byte[LSB] + 1); // Two's compliment
         update_psw((~srcnum.byte[LSB] + 1), dstnum.byte[LSB], result.byte[LSB], execute_input.w_b);
-        reg_file[0][execute_input.dest] = result.byte[LSB];
     }
     else
     {
         result.word = dstnum.word + (~srcnum.word + 1);
         update_psw((~srcnum.word + 1), dstnum.word, result.word, execute_input.w_b);
-        reg_file[0][execute_input.dest] = result.word;
     }
 }
 
@@ -348,7 +346,7 @@ void execute_XOR()
     {
         dstnum.word ^= srcnum.word;
         update_psw1(dstnum.word, execute_input.w_b);
-        reg_file[0][execute_input.dest] = dstnum.word;
+        reg_file[REG][execute_input.dest] = dstnum.word;
     }
 
 }
@@ -360,13 +358,13 @@ void execute_AND()
     {
         dstnum.byte[LSB] = srcnum.byte[LSB] & dstnum.byte[LSB];
         update_psw1(dstnum.byte[LSB], execute_input.w_b);
-        reg_file[0][execute_input.dest] = dstnum.byte[LSB];
+        reg_file[REG][execute_input.dest] = dstnum.byte[LSB];
     }
 	else
     {
         dstnum.word = srcnum.word & dstnum.word;
         update_psw1(dstnum.word, execute_input.w_b);
-        reg_file[0][execute_input.dest] = dstnum.word;
+        reg_file[REG][execute_input.dest] = dstnum.word;
     }
 
 }
@@ -382,13 +380,13 @@ void execute_OR()
     {
         dstnum.byte[LSB] |= srcnum.byte[LSB];
         update_psw1(dstnum.byte[LSB], execute_input.w_b);
-        reg_file[0][execute_input.dest] = dstnum.byte[LSB];
+        reg_file[REG][execute_input.dest] = dstnum.byte[LSB];
     }
     else
     {
         dstnum.word |= srcnum.word;
         update_psw1(dstnum.word, execute_input.w_b);
-        reg_file[0][execute_input.dest] = dstnum.word;
+        reg_file[REG][execute_input.dest] = dstnum.word;
     }
 
 }
@@ -403,14 +401,14 @@ void execute_BIT()
     {
         result.byte[LSB] = dstnum.byte[LSB] & srcnum.byte[LSB];
         update_psw2(result.byte);
-        reg_file[0][execute_input.dest] = result.byte[LSB];
+        reg_file[REG][execute_input.dest] = result.byte[LSB];
 
     }
     else
     {
         result.word = dstnum.word & srcnum.word;
         update_psw2(result.word);
-        reg_file[0][execute_input.dest] = result.word;
+        reg_file[REG][execute_input.dest] = result.word;
 
     }
 
@@ -426,13 +424,13 @@ void execute_BIC()
     {
         dstnum.byte[LSB] &= ~srcnum.byte[LSB];
         update_psw1(dstnum.byte[LSB], execute_input.w_b);
-        reg_file[0][execute_input.dest] = dstnum.byte[LSB];
+        reg_file[REG][execute_input.dest] = dstnum.byte[LSB];
     }
     else
     {
         dstnum.word &= ~srcnum.word;
         update_psw1(dstnum.word, execute_input.w_b);
-        reg_file[0][execute_input.dest] = dstnum.word;
+        reg_file[REG][execute_input.dest] = dstnum.word;
     }
 
 }
@@ -446,14 +444,14 @@ void execute_BIS()
     {
         dstnum.byte[LSB] |= srcnum.byte[LSB];
         update_psw1(dstnum.byte[LSB], execute_input.w_b);
-        reg_file[0][execute_input.dest] = dstnum.byte[LSB];
+        reg_file[REG][execute_input.dest] = dstnum.byte[LSB];
         
     }
     else
     {
         dstnum.word |= srcnum.word;
         update_psw1(dstnum.word, execute_input.w_b);
-        reg_file[0][execute_input.dest] = dstnum.word;
+        reg_file[REG][execute_input.dest] = dstnum.word;
     }
 
 }
@@ -485,8 +483,8 @@ void execute_SWAP()
 
         // Swap full word
         temp = reg_file[0][execute_input.dest];
-        reg_file[0][execute_input.dest] = reg_file[0][execute_input.s_c];
-        reg_file[0][execute_input.s_c] = temp;
+        reg_file[REG][execute_input.dest] = reg_file[0][execute_input.s_c];
+        reg_file[REG][execute_input.s_c] = temp;
 }
 
 void execute_SRA()
@@ -496,9 +494,9 @@ void execute_SRA()
     if (execute_input.w_b) {
         dstnum.byte[LSB] >>= 1;
         update_psw1(dstnum.byte[LSB], execute_input.w_b);
-        reg_file[0][execute_input.dest] = (reg_file[0][execute_input.dest] & 0xFF00) | (dstnum.byte[LSB] & 0x00FF);
+        reg_file[REG][execute_input.dest] = (reg_file[0][execute_input.dest] & 0xFF00) | (dstnum.byte[LSB] & 0x00FF);
     } else {
-        dstnum.word >>= 1;
+        dstnum.word >>= ONE;
         update_psw1(dstnum.word, execute_input.w_b);
         reg_file[0][execute_input.dest] = dstnum.word;
     }
@@ -515,14 +513,14 @@ void execute_RRC()
         PSW.C = dstnum.byte[LSB] & 0x01;
         dstnum.byte[LSB] = (dstnum.byte[LSB] >> 1) | (tempCarry << 7);
         update_psw1(dstnum.byte[LSB], execute_input.w_b);
-        reg_file[0][execute_input.dest] = (reg_file[0][execute_input.dest] & 0xFF00) | (dstnum.byte[LSB] & 0x00FF);
+        reg_file[REG][execute_input.dest] = (reg_file[0][execute_input.dest] & 0xFF00) | (dstnum.byte[LSB] & 0x00FF);
     } 
     else 
     {
         PSW.C = dstnum.word & 0x0001;
         dstnum.word = (dstnum.word >> 1) | (tempCarry << 15);
         update_psw1(dstnum.word, execute_input.w_b);
-        reg_file[0][execute_input.dest] = dstnum.word;
+        reg_file[REG][execute_input.dest] = dstnum.word;
     }
 }
 void execute_SWPB()

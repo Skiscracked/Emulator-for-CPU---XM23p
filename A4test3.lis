@@ -1,0 +1,77 @@
+X-Makina Assembler - Version XM-23P Single Pass+ Assembler - Release 24.04.17
+Input file name: A4test3.asm
+Time of assembly: Sat 27 Jul 2024 19:50:19 
+  1	    	     	; Sample Assembly Program to Test the XM23p Pipeline
+  2	    	     	; Author: Semilore Kayode
+  3	    	     	; Test of BN and BGE
+  4	    	     	; Date: 05/07/2024
+  5	    	     	;
+  6	    	     	PC    equ    R7
+  7	    	     	SP    equ    R6
+  8	    	     	LR    equ    R5
+  9	    	     	NUL   equ    '\0'
+ 10	    	     	;
+ 11	    	     	; Code segment
+ 12	    	     	;
+ 13	    	     	    Code
+ 14	    	     	    org    #3000
+ 15	    	     	
+ 16	    	     	Start
+ 17	3000	6C00	    movlz    #80,R0    ; Initialize R0 to -128 (signed)
+ 18	    	     	
+ 19	    	     	TestBN
+ 20	3002	45C0	    cmp.b    #0,R0
+ 21	3004	3004	    bn    Negative    ; Branch if R0 < 0
+ 22	3006	6812	    movlz    #2,R2    ; This should not execute
+ 23	    	     	
+ 24	    	     	TestBGE
+ 25	3008	6801	    movlz    #0,R1
+ 26	300A	45C1	    cmp.b    #0,R1
+ 27	300C	3402	    bge    NotNegative    ; Branch if R1 >= 0
+ 28	    	     	
+ 29	    	     	Negative
+ 30	300E	6824	    movlz    #4,R4    ; R4 = 4 if branch taken
+ 31	3010	3C01	    bra      DONE
+ 32	    	     	
+ 33	    	     	NotNegative
+ 34	3012	682D	    movlz    #5,R5    ; R5 = 5 if branch taken
+ 35	    	     	
+ 36	    	     	DONE
+ 37	3014	3FFF	    bra    DONE
+ 38	    	     	    end    Start
+Successful completion of assembly - 2P
+
+** Symbol table **
+
+Constants (Equates)
+Name                               	Type	Value	Decimal
+NUL                                	CON	0000	0	PRI
+
+Labels (Code)
+Name                               	Type	Value	Decimal
+DONE                               	REL	3014	12308	PRI
+NotNegative                        	REL	3012	12306	PRI
+TestBGE                            	REL	3008	12296	PRI
+Negative                           	REL	300E	12302	PRI
+TestBN                             	REL	3002	12290	PRI
+Start                              	REL	3000	12288	PRI
+
+Labels (Data)
+Name                               	Type	Value	Decimal
+
+Registers
+Name                               	Type	Value	Decimal
+LR                                 	REG	0005	5	PRI
+SP                                 	REG	0006	6	PRI
+PC                                 	REG	0007	7	PRI
+R7                                 	REG	0007	7	PRI
+R6                                 	REG	0006	6	PRI
+R5                                 	REG	0005	5	PRI
+R4                                 	REG	0004	4	PRI
+R3                                 	REG	0003	3	PRI
+R2                                 	REG	0002	2	PRI
+R1                                 	REG	0001	1	PRI
+R0                                 	REG	0000	0	PRI
+
+.XME file: C:\Users\semil\OneDrive\Documents(main)\School work\3rd year SK\Comp Arch\Assembler\A4test3.xme
+

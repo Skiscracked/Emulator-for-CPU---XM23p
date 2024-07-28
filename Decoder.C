@@ -72,62 +72,62 @@ void handle_group_40(Instruction instr) //addy in this case is going to be the c
     case 0x00: //ADD opcode
         //printf("%04X: ADD", addy);// ADD Instruction
         display_content(instr);
-        execute_input.UI = 1;
+        execute_input.UI = ADD;
         break;
     case 0x01:
         //printf("%04X: ADDC", addy);// ADDC Instruction
         display_content(instr);
-        execute_input.UI = 2;
+        execute_input.UI = ADDC;
         break;
     case 0x02:
         //printf("%04X: SUB", addy);// SUB Instruction
         display_content(instr);
-        execute_input.UI = 3;
+        execute_input.UI = SUB;
         break;
     case 0x03:
         //printf("%04X: SUBC", addy);// SUBC Instruction
         display_content(instr);
-        execute_input.UI = 4;
+        execute_input.UI = SUBC;
         break;
     case 0x04:
         //printf("%04X: DADD", addy);// DADD Instruction
         display_content(instr);
-        execute_input.UI = 5;
+        execute_input.UI = DADD;
         break;
     case 0x05:
         //printf("%04X: CMP", addy);// CMP Instruction
         display_content(instr);
-        execute_input.UI = 6;
+        execute_input.UI = CMP;
         break;
     case 0x06:
         //printf("%04X: XOR", addy);// XOR Instruction
         display_content(instr);
-        execute_input.UI = 7;
+        execute_input.UI = XOR;
         break;
     case 0x07:
         //printf("%04X: AND", addy);// AND Instruction
         display_content(instr);
-        execute_input.UI = 8;
+        execute_input.UI = AND;
         break;
     case 0x08:
         //printf("%04X: OR", addy);// OR Instruction
         display_content(instr);
-        execute_input.UI = 9;
+        execute_input.UI = OR;
         break;
     case 0x09:
         //printf("%04X: BIT", addy);// BIT Instruction
         display_content(instr);
-        execute_input.UI = 10;
+        execute_input.UI = BIT;
         break;
     case 0x0A:
         //printf("%04X: BIC", addy);// BIC Instruction
         display_content(instr);
-        execute_input.UI = 11;
+        execute_input.UI = BIC;
         break;
     case 0x0B:
         //printf("%04X: BIS", addy);// BIS Instruction
         display_content(instr);
-        execute_input.UI = 12;
+        execute_input.UI = BIS;
         break;
     case 0x0C:
         handle_group_4C(instr);
@@ -156,7 +156,7 @@ void handle_group_4C(Instruction instr)
         instr.dest = ((instr.opcode) & 0x07);
         instr.r_c = 0x00;
         execute_input = instr;
-        execute_input.UI = 13;
+        execute_input.UI = MOV;
         break;
     case 0x01:
         //printf("%04X: SWAP", addy);//SWAP Instruction
@@ -164,7 +164,7 @@ void handle_group_4C(Instruction instr)
         instr.dest = ((instr.opcode) & 0x07);
         //printf(" SRC: R%d DST: R%d\n", instr.s_c, instr.dest);
         execute_input = instr;
-        execute_input.UI = 14;
+        execute_input.UI = SWAP;
         break;
     }
 }
@@ -178,12 +178,12 @@ void handle_group_132(Instruction instr)
     case 0x00:
         //printf("%04X: SRA", addy); //SRA Instruction
         display_content_4_SRA_and_RRC(instr);
-        execute_input.UI = 15;
+        execute_input.UI = SRA;
         break;
     case 0x01:
         //printf("%04X: RRC", addy);//RRC Instruction
         display_content_4_SRA_and_RRC(instr);
-        execute_input.UI = 16;
+        execute_input.UI = RRC;
         break;
     case 0x03:
         //printf("%04X: SWPB", addy);//SWPB Instruction
@@ -192,7 +192,7 @@ void handle_group_132(Instruction instr)
         /*if (instr.dest <= 7)
             printf(" DST: R%d\n", instr.dest);*/
         execute_input = instr;// After decoding instruction, output it to the input for execute
-        execute_input.UI = 17;
+        execute_input.UI = SWPB;
         break;
 
     case 0x04:
@@ -202,7 +202,7 @@ void handle_group_132(Instruction instr)
         if (instr.dest <= 7)
             //printf(" DST: R%d\n", instr.dest);
         execute_input = instr;// After decoding instruction, output it to the input for execute
-        execute_input.UI = 18;
+        execute_input.UI = SXT;
         break;
     }
 }
@@ -218,22 +218,22 @@ void handle_group_MOV(Instruction instr)
     case 0x0C:
         extract_data_and_dest(&temp);
         //printf("%04X: MOVL DST.Low: %x DST: R%x\n", addy, temp.data, temp.dest);
-        execute_input.UI = 19;
+        execute_input.UI = MOVL;
         break;
     case 0x0D:
         extract_data_and_dest(&temp);
         //printf("%04X: MOVLZ DST.Low: %x DST: R%x\n", addy, temp.data, temp.dest);
-        execute_input.UI = 20;
+        execute_input.UI = MOVLZ;
         break;
     case 0x0E:
         extract_data_and_dest(&temp);
         //printf("%04X: MOVLS DST.Low: %x DST: R%x\n", addy, temp.data, temp.dest);
-        execute_input.UI = 21;
+        execute_input.UI = MOVLS;
         break;
     case 0x0F:
         extract_data_and_dest(&temp);
         //printf("%04X: MOVH DST.High: %x DST: R%x\n", addy, temp.data, temp.dest);
-        execute_input.UI = 22;
+        execute_input.UI = MOVH;
         break;
     }
 }
@@ -258,7 +258,7 @@ void handle_SETCC_and_CLRCC(Instruction instr)
         SETCC.N = (temp.opcode >> TWO) & LSBit;
         SETCC.Z = (temp.opcode >> ONE) & LSBit;
         SETCC.C = (temp.opcode) & LSBit;
-        execute_input.UI = 23;
+        execute_input.UI = SETcc;
         break;
     case 0x02:
         CLRCC.V = (temp.opcode >> FOUR) & LSBit;
@@ -266,7 +266,7 @@ void handle_SETCC_and_CLRCC(Instruction instr)
         CLRCC.N = (temp.opcode >> TWO) & LSBit;
         CLRCC.Z = (temp.opcode >> ONE) & LSBit;
         CLRCC.C = (temp.opcode) & LSBit;
-        execute_input.UI = 24;
+        execute_input.UI = CLRcc;
         break;
     }
     
@@ -285,7 +285,7 @@ void handle_group_LD_and_ST(Instruction instr)
         handler.INC = ((handler.opcode >> SEVEN) & LSBit);
         handler.DEC = ((handler.opcode >> EIGHT) & LSBit);
         handler.PRPO = ((handler.opcode >> NINE) & LSBit);
-        handler.UI = 25;
+        handler.UI = LD;
         break;
     case 1:
         // This handles decoding data for instruction - ST
@@ -295,7 +295,7 @@ void handle_group_LD_and_ST(Instruction instr)
         handler.INC = ((handler.opcode >> SEVEN) & LSBit);
         handler.DEC = ((handler.opcode >> EIGHT) & LSBit);
         handler.PRPO = ((handler.opcode >> NINE) & LSBit);
-        handler.UI = 26;
+        handler.UI = ST;
         break;
 
     }   
@@ -314,7 +314,7 @@ void handle_group_LDR_and_STR(Instruction instr)
         handler.w_b = ((handler.opcode >> SIX) & LSBit);
         handler.OFF = ((handler.opcode >> SEVEN) & OFFSET_MASK);
         sign_extend_7bit(&handler.OFF);
-        handler.UI = 27;
+        handler.UI = LDR;
         break;
     case THREE:
         // This handles decoding data for instruction - STR
@@ -323,7 +323,7 @@ void handle_group_LDR_and_STR(Instruction instr)
         handler.w_b = ((handler.opcode >> SIX) & LSBit);
         handler.OFF = ((handler.opcode >> SEVEN) & OFFSET_MASK);
         sign_extend_7bit(&handler.OFF);
-        handler.UI = 28;
+        handler.UI = STR;
         break;
     }
     execute_input = handler;
@@ -334,7 +334,7 @@ void handle_BL(Instruction instr)
     Instruction handler = instr;
     handler.OFF_13bit = (handler.opcode & BL_OFFSET_MASK);
     sign_extend_13bit(&handler.OFF_13bit);
-    handler.UI = 29;
+    handler.UI = BL;
     execute_input = handler;
 }
 
@@ -344,28 +344,28 @@ void handle_BRANCH_group(Instruction instr)
     switch (handler.opcode >> TEN)
     {
     case EIGHT: // BEQ/BZ
-        handler.UI = 30;
+        handler.UI = BEQ_BZ;
         break;
     case NINE:// BNE/BNZ
-        handler.UI = 31;
+        handler.UI = BNE_BNZ;
         break;
     case TEN: // BC/BHS
-        handler.UI = 32;
+        handler.UI = BC_BHS;
         break;
     case ELEVEN: // BNC/BLO
-        handler.UI = 33;
+        handler.UI = BNC_BLO;
         break;
     case TWELVE: // BN
-        handler.UI = 34;
+        handler.UI = BN;
         break;
     case THIRTEEN: // BGE
-        handler.UI = 35;
+        handler.UI = BGE;
         break;
     case FOURTEEN: // BLT
-        handler.UI = 36;
+        handler.UI = BLT;
         break;
     case FIFTEEN: // BRA
-        handler.UI = 37;
+        handler.UI = BRA;
         break;
     }
     handler.OFF_10bit = (handler.opcode & BRANCH_MASK);
@@ -495,7 +495,7 @@ void display_registers()
 void change_register_value(int reg, unsigned short value)
 {
     if (reg >= 0 && reg < REGFILE) {
-        if (value <= 0xFFFF)
+        if (value <= (MEM_SIZE -1))
         {
             reg_file[0][reg] = value;
             if (reg == 7)
@@ -511,7 +511,7 @@ void change_register_value(int reg, unsigned short value)
 
 void change_memory_value(int type, unsigned short address, unsigned short value)
 {
-    if (value < 65536)
+    if (value < MEM_SIZE)
     {
         if (type == 0) {
             // Instruction memory

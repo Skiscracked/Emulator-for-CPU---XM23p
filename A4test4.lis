@@ -1,0 +1,76 @@
+X-Makina Assembler - Version XM-23P Single Pass+ Assembler - Release 24.04.17
+Input file name: A4test4.asm
+Time of assembly: Sat 27 Jul 2024 23:06:49 
+  1	    	     	;
+  2	    	     	; Test of BLT and BRA
+  3	    	     	;
+  4	    	     	PC    equ    R7
+  5	    	     	SP    equ    R6
+  6	    	     	LR    equ    R5
+  7	    	     	NUL   equ    '\0'
+  8	    	     	;
+  9	    	     	; Code segment
+ 10	    	     	;
+ 11	    	     	    Code
+ 12	    	     	    org    #4000
+ 13	    	     	
+ 14	    	     	Start
+ 15	4000	6808	    movlz    #1,R0    ; Initialize R0 to 1
+ 16	4002	6811	    movlz    #2,R1    ; Initialize R1 to 2
+ 17	    	     	
+ 18	    	     	TestBLT
+ 19	4004	4548	    cmp.b    R1,R0
+ 20	4006	3803	    blt    LessThan    ; Branch if R1 < R0
+ 21	4008	6812	    movlz    #2,R2    ; This should not execute
+ 22	    	     	
+ 23	    	     	AlwaysBranch
+ 24	400A	3C03	    bra    Always    ; Always branch
+ 25	400C	681B	    movlz    #3,R3    ; This should not execute
+ 26	    	     	
+ 27	    	     	LessThan
+ 28	400E	6824	    movlz    #4,R4    ; R4 = 4 if branch taken
+ 29	4010	3C01	    bra DONE
+ 30	    	     	
+ 31	    	     	Always
+ 32	4012	682D	    movlz    #5,R5    ; R5 = 5 if branch taken
+ 33	    	     	
+ 34	    	     	DONE
+ 35	4014	3FFF	    bra    DONE
+ 36	    	     	    end    Start
+
+Successful completion of assembly - 2P
+
+** Symbol table **
+
+Constants (Equates)
+Name                               	Type	Value	Decimal
+NUL                                	CON	0000	0	PRI
+
+Labels (Code)
+Name                               	Type	Value	Decimal
+DONE                               	REL	4014	16404	PRI
+Always                             	REL	4012	16402	PRI
+AlwaysBranch                       	REL	400A	16394	PRI
+LessThan                           	REL	400E	16398	PRI
+TestBLT                            	REL	4004	16388	PRI
+Start                              	REL	4000	16384	PRI
+
+Labels (Data)
+Name                               	Type	Value	Decimal
+
+Registers
+Name                               	Type	Value	Decimal
+LR                                 	REG	0005	5	PRI
+SP                                 	REG	0006	6	PRI
+PC                                 	REG	0007	7	PRI
+R7                                 	REG	0007	7	PRI
+R6                                 	REG	0006	6	PRI
+R5                                 	REG	0005	5	PRI
+R4                                 	REG	0004	4	PRI
+R3                                 	REG	0003	3	PRI
+R2                                 	REG	0002	2	PRI
+R1                                 	REG	0001	1	PRI
+R0                                 	REG	0000	0	PRI
+
+.XME file: C:\Users\semil\OneDrive\Documents(main)\School work\3rd year SK\Comp Arch\Assembler\A4test4.xme
+
