@@ -24,11 +24,38 @@ extern ProgramStatusWord SETCC, CLRCC;
 //These are external variables for instructions which set/clear the PSW bits
 
 extern unsigned carry[2][2][2];
+// This is a 3d array that contains carry values that correspond to the result of signed and unsigned arithmetic
 extern unsigned overflow[2][2][2];
+// This is a 3d array that contains overflow values that correspond to the result of signed and unsigned arithmetic
 extern unsigned offset_table[2][2][2];
+// This is a 3d array that contains offset values that correspond to the decrement, prepost, and increment bits in a ld/st instruction
 
-// These variables represent CPU registers for the XM23p
 
+// Enum for condition prefixes concerning the CEX command
+typedef enum {
+    EQ = 0b0000, // Equal / equals zero
+    NE = 0b0001, // Not equal
+    CS = 0b0010, // Carry set / unsigned higher or same
+    CC = 0b0011, // Carry clear / unsigned lower
+    MI = 0b0100, // Minus / negative
+    PL = 0b0101, // Plus / positive or zero
+    VS = 0b0110, // Overflow
+    VC = 0b0111, // No overflow
+    HI = 0b1000, // Unsigned higher
+    LS = 0b1001, // Unsigned lower or same
+    GE = 0b1010, // Signed greater than or equal
+    LT = 0b1011, // Signed less than
+    GT = 0b1100, // Signed greater than
+    LE = 0b1101, // Signed less than or equal
+    TR = 0b1110, // Always true
+    FL = 0b1111  // Always false
+} ConditionCode;
+
+extern ConditionCode Cond_prefix;//enum containing the condition prefix
+extern bool CEX_state;// A bool variable to enable and disable CEX mode for the emulator
+extern bool CEX_test;// A bool variable to tell us if the condition for the CEX is true or false
+
+// These variables represent CPU registers for the XM23p:
 // These are instruction memory registers
 extern unsigned short IMAR;
 extern unsigned short IMBR;
@@ -112,7 +139,13 @@ void execute_BN();
 void execute_BGE();
 void execute_BLT();
 void execute_BRA();
+void execute_CEX();// This function turns on the CEX state after checking the condition
 
+void CEX_checker(); // This function polls, checking if the instructions to executed are executed, and bubbles the ones to not be executed.
+// This function is used in the pipeline, once CEX_state is SET in execute_CEX
+
+extern char CEX_truecount;// These are variable of a byte each, used to store the count of true conditions upon decoding CEX
+extern char CEX_falsecount;// These are variable of a byte each, used to store the count of false conditions upon decoding CEX
 
 void update_psw(unsigned short src, unsigned short dest, unsigned short result, unsigned short wb); // This function updates VNZC
 //void update_psw3(unsigned short dest, unsigned short wb); // This function updates NZC using 

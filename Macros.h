@@ -67,6 +67,7 @@
 #define BGE 35
 #define BLT 36
 #define BRA 37
+#define CEX 38
 
 // Defining a macro that represents a breakpoint check
 #define BKPNT_CHECK (IMAR + 2)
@@ -96,6 +97,7 @@
 #define FALSE 0
 
 #define FIFTEEN 15
+#define FIFTEENhex 0x000F
 #define FOURTEEN 14
 #define THIRTEEN 13
 #define TWELVE 12
@@ -104,12 +106,14 @@
 #define NINE 9
 #define EIGHT 8
 #define SEVEN 7
+#define SEVENhex 0x7
 #define SIX 6
 #define FIVE 5
 #define FOUR 4
 #define THREE 3
 #define TWO 2
 #define ONE 1
+#define ZERO 0
 // Defining some commonly used values
 
 #define SIGN(x) (x>>6)

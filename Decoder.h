@@ -25,26 +25,34 @@ extern unsigned short IMEM_SA;
 //Breakpoint variable to stop program
 extern unsigned short breakpoint;
 
-//Declaring an instruction
+/*
+This structure - Instruction is a general data structure 
+for any instruction decoded in the emulator.
+*/
 typedef struct {
     unsigned short opcode;//holds the binary equivalent of the bytes from the array
-    unsigned short address;
-    unsigned char r_c;
-    unsigned char PRPO;
-    unsigned char DEC;
-    unsigned char INC;
-    unsigned char w_b;
-    unsigned char s_c;
-    unsigned char dest;
-    unsigned short data; // Data for the MOVH, MOVL, MOVLZ and MOVLS functions
-    signed char OFF;
-    signed short OFF_13bit;
-    signed short OFF_10bit;
-    unsigned short UI; // Unique Identifier for Instructions
+    unsigned short address;// Holds the address of the instruction
+    unsigned char r_c;// Holds the register/constant value of the instruction, if applicable.
+    unsigned char PRPO;// Holds the PRPO bit of the instruction, if applicable.
+    unsigned char DEC;// Holds the DEC bit of the instruction, if applicable.
+    unsigned char INC;// Holds the INC bit of the instruction, if applicable.
+    unsigned char w_b;// Holds the W/B bit of the instruction, if applicable.
+    unsigned char s_c;// Holds the S/C bit of the instruction, if applicable.
+    unsigned char dest;// Holds the DST bit of the instruction, if applicable.
+    unsigned short data;// Data for the MOVH, MOVL, MOVLZ and MOVLS functions
+    signed char OFF;// Holds the decoded 7-bit Offset of the instruction, if applicable.
+    signed short OFF_13bit;// Holds the decoded 13-bit Offset of the instruction, if applicable.
+    signed short OFF_10bit;// Holds the decoded 10-bit Offset of the instruction, if applicable.
+    unsigned char Condition;// Holds the condition bits which are decoded of the instruction, if applicable.
+    unsigned char True_count;// Holds the number of instructions to be executed if condition is true.
+    unsigned char False_count;// Holds the number of instructions to be executed if condition is false.
+    unsigned short UI;// Unique Identifier for Instructions in order to different the different instructions.
 } Instruction;
 
 extern Instruction command;
 // This struct is the input for decode
+
+extern bool CEX_state;//A state to notify whether CEX is detected or not
 
 extern Instruction execute_input;
 // This struct is populate by the Decode function and is an input for execute
@@ -63,6 +71,7 @@ void handle_group_LD_and_ST(Instruction instr);
 void handle_group_LDR_and_STR(Instruction instr);
 void handle_BL(Instruction instr);
 void handle_BRANCH_group(Instruction instr);
+void handle_CEX(Instruction instr);// Function to handle the decoding of the CEX instruction
 
 // Register functions
 Instruction Copy_IR(unsigned int pc);

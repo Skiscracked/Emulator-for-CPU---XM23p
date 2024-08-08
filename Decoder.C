@@ -12,6 +12,10 @@
 
 Instruction execute_input;
 ProgramStatusWord SETCC, CLRCC;
+ConditionCode Cond_prefix;//enum containing the condition prefix
+bool CEX_state;// A bool variable to enable and disable CEX mode for the emulator
+char CEX_truecount;
+char CEX_falsecount;
 
 // Initializing the reg_file
 unsigned short reg_file[REGCON][REGFILE] = {
@@ -370,6 +374,23 @@ void handle_BRANCH_group(Instruction instr)
     }
     handler.OFF_10bit = (handler.opcode & BRANCH_MASK);
     sign_extend_10bit(&handler.OFF_10bit);
+    execute_input = handler;
+}
+
+void handle_CEX(Instruction instr)
+{   
+    // This function handles the decoding(obtaining of the various bits/data) of the CEX instruction
+   
+    Instruction handler = instr;
+    handler.Condition = (handler.opcode >> SIX) & FIFTEENhex; // Obtaining the condition from the opcode
+    int x = handler.Condition; 
+    // Giving a variable of type int the condition prefix, so I can give the variable of type enum the decoded prefix
+    Cond_prefix = x;
+    handler.True_count = (handler.opcode >> THREE) & SEVENhex;// Obtaining the number of instruction to execute if true from the opcode
+    handler.False_count = (handler.opcode & SEVENhex);// Obtaining the number of instruction to execute if false from the opcode
+    CEX_truecount = handler.True_count;
+    CEX_falsecount = handler.False_count;
+    handler.UI = CEX;// Assigning a value to the execute_input unique identifier for the functions
     execute_input = handler;
 }
 

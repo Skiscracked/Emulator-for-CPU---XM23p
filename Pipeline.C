@@ -15,6 +15,9 @@ bool ICTRL, DCTRL;
 ProgramStatusWord PSW, SETCC, CLRCC;
 int offset;
 volatile sig_atomic_t ctrl_c_fnd; /* T|F - indicates whether ^C detected */
+bool CEX_test;// A bool variable to tell us if the condition for the CEX is true or false
+char CEX_truecount;// Declaring the extern variables in my .C, to use them locally but store them globally
+char CEX_falsecount;// Declaring the extern variables in my .C, to use them locally but store them globally
 
 unsigned carry[2][2][2] = { 0, 0, 1, 0, 1, 0, 1, 1 };
 unsigned overflow[2][2][2] = { 0, 1, 0, 0, 0, 0, 1, 0 };
@@ -47,18 +50,20 @@ void IMEM_Controller(unsigned int IMAR, unsigned int ICTRL, unsigned int* IMBR)
 void D0()
 { 
      Instruction command = Copy_IR(IMAR);
-     if (((command.opcode >> 8) & OPCODE_MASK_40) == OPCODE_GROUP_40)// If it falls between the 0x40(0100 0000) range call this function
+     if (((command.opcode >> EIGHT) & OPCODE_MASK_40) == OPCODE_GROUP_40)// If it falls between the 0x40(0100 0000) range call this function
          handle_group_40(command);// Calling the function passing command, so the starting address of the IMEM can be obtained by handle_group_40
-     else if (((command.opcode >> 11) & OPCODE_MASK_MOV) == OPCODE_MASK_MOV)
+     else if (((command.opcode >> ELEVEN) & OPCODE_MASK_MOV) == OPCODE_MASK_MOV)
          handle_group_MOV(command);
-     else if (((command.opcode >> 11) & LOWNIB_MASK) == OPCODE_MASK_LD_ST)
+     else if (((command.opcode >> ELEVEN) & LOWNIB_MASK) == OPCODE_MASK_LD_ST)
          handle_group_LD_and_ST(command);
-     else if (((command.opcode >> 14) & TWO) == TWO)
+     else if (((command.opcode >> FOURTEEN) & TWO) == TWO)
          handle_group_LDR_and_STR(command);
-     else if ((command.opcode >> 13) == 0)
+     else if ((command.opcode >> THIRTEEN) == 0)
          handle_BL(command);
-     else if ((command.opcode >> 13) == ONE)
+     else if ((command.opcode >> THIRTEEN) == ONE)
          handle_BRANCH_group(command);
+     else if ((command.opcode >> ELEVEN) == TEN)
+         handle_CEX(command);
      else if (command.opcode == OPCODE_NO_INSTRUCTION)
      {
          printf("Program is now ending\n");
@@ -182,6 +187,9 @@ void E0()
         break;
     case BRA:
         execute_BRA();
+        break;
+    case CEX:
+        execute_CEX();
         break;
     }
 }
@@ -757,6 +765,7 @@ void execute_BL()
     LR = PC - TWO;
     PC = PC - 2 + execute_input.OFF_13bit;
     bubble();
+    CEX_state = FALSE; // In the requirements from A5, we know that BL disables the CEX command
 }
 
 void execute_BEQ_BZ()
@@ -826,6 +835,109 @@ void execute_BRA()
 {
     PC = PC - 2 + execute_input.OFF_10bit;
     bubble();
+}
+
+void execute_CEX()
+{/*
+ This function is responsible for executing the CEX instruction
+
+ - First it checks the decoded Condition Prefix.
+   Determining which one of the PSW bits to be tested,
+   finding out if it/they are true then returns the status
+   to a bool variable.
+ */ 
+        switch (Cond_prefix)
+        {
+            // This is the switch case to evaluate if the condition is true or false based of the PSW bits
+        case EQ:
+            CEX_test = (PSW.Z == SET) ? TRUE : FALSE;
+            break;
+        case NE:
+            CEX_test = (PSW.Z == CLEAR) ? TRUE : FALSE;
+            break;
+        case CS:
+            CEX_test = (PSW.C == SET) ? TRUE : FALSE;
+            break;
+        case CC:
+            CEX_test = (PSW.C == CLEAR) ? TRUE : FALSE;
+            break;
+        case MI:
+            CEX_test = (PSW.N == SET) ? TRUE : FALSE;
+            break;
+        case PL:
+            CEX_test = (PSW.N == CLEAR) ? TRUE : FALSE;
+            break;
+        case VS:
+            CEX_test = (PSW.V == SET) ? TRUE : FALSE;
+            break;
+        case VC:
+            CEX_test = (PSW.V == CLEAR) ? TRUE : FALSE;
+            break;
+        case HI:
+            CEX_test = ((PSW.C == SET) && (PSW.Z == CLEAR)) ? TRUE : FALSE;
+            break;
+        case LS:
+            CEX_test = ((PSW.C == CLEAR) || (PSW.Z == SET)) ? TRUE : FALSE;
+            break;
+        case GE:
+            CEX_test = (PSW.N == PSW.V) ? TRUE : FALSE;
+            break;
+        case LT:
+            CEX_test = (PSW.N != PSW.V) ? TRUE : FALSE;
+            break;
+        case GT:
+            CEX_test = ((PSW.Z == CLEAR) && (PSW.N == PSW.V)) ? TRUE : FALSE;
+            break;
+        case LE:
+            CEX_test = ((PSW.Z == SET) || (PSW.N != PSW.V)) ? TRUE : FALSE;
+            break;
+        case TR:
+            CEX_test = TRUE;
+            break;
+        case FL:
+            CEX_test = FALSE;
+            break;
+        }
+
+        CEX_state = TRUE;// Enabling the CEX state ~ CEX states acts like a flag. It tells the emulator to go into conditional execution mode.
+}
+
+void CEX_checker()
+// This function is constantly polling if the CEX state is set
+// Checking if the instructions to executed are executed, and bubbles the ones to not be executed
+{
+    if (CEX_test)
+        // If the decoded condition is true, execute the amount of true statements
+    {
+        if (CEX_truecount)
+            CEX_truecount--; // If the condition is true, decrement the count of true instructions and execute each one
+        else if (!CEX_truecount && CEX_falsecount)
+        {
+            bubble();// If all true conditions have been executed, start bubbling false ones decrementing the count of false ones
+            CEX_falsecount--; 
+        }
+    }
+    else // The decoded condition must be false. Bubble true and execute false
+    {
+        if (CEX_truecount)
+        {
+            bubble();
+            CEX_truecount--; // bubble all the true instructions, decrementing the count of the overall true conditions
+        }
+            
+        else if (CEX_falsecount && !CEX_truecount)
+            CEX_falsecount--; // If the count of all true conditions is zero, now execute the false ones
+    }
+
+    if (!CEX_truecount && !CEX_falsecount)
+        CEX_state = FALSE;
+    /*
+        We exit the CEX command under two conditions :
+        - if all true conditions are executed and all false are bubbled
+        or
+        - if all true are bubbled and false are executed
+        Which is what the if statement above is
+    */
 }
 
 void update_psw(unsigned short src, unsigned short dest, unsigned short result, unsigned short wb)
@@ -914,6 +1026,8 @@ void Run_pipeline_continuous()
         {
             F1();
             E0();
+            if (CEX_state) // CEX_state only turns on if CEX was decoded and executed. If a BL is detected, the CEX_state is disabled.
+                CEX_checker();
             printf("%d\t\t\t\tF1: %04X\t\t\tE0: %04X", Clock, IMBR, execute_input.opcode);
             printf("\t%x%x%x%x \n", PSW.V, PSW.N, PSW.Z, PSW.C);
         }
@@ -943,6 +1057,8 @@ void Run_pipeline_single()
     {
         F1();
         E0();
+        if (CEX_state) // CEX_state only turns on if CEX was decoded and executed. If a BL is detected, the CEX_state is disabled.
+            CEX_checker();
         printf("%d\t\t\t\tF1: %04X\t\t\tE0: %04X", Clock, IMBR, execute_input.opcode);
         printf("\t%x%x%x%x \n", PSW.V, PSW.N, PSW.Z, PSW.C);
     }

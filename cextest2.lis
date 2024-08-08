@@ -1,0 +1,58 @@
+X-Makina Assembler - Version XM-23P Single Pass+ Assembler - Release 24.04.17
+Input file name: cextest2.asm
+Time of assembly: Wed 31 Jul 2024 18:05:36 
+  1	    	     	
+  2	    	     	V1	equ	$10
+  3	    	     	V2	equ	$7
+  4	    	     	LR	equ	R5
+  5	    	     	PC	equ	R7
+  6	    	     	
+  7	    	     		CODE
+  8	    	     		org	#1000
+  9	    	     	Main
+ 10	1000	6851		movlz	V1,R1
+ 11	1002	683A		movlz	V2,R2
+ 12	1004	4DA2		setcc	Z
+ 13	1006	500A		cex	eq,$1,$2
+ 14	1008	4011		add	R2,R1
+ 15	100A	4291		sub	$2,R1
+ 16	100C	7013		movls	#02,R3
+ 17	100E	3C00		bra	Done
+ 18	    	     	
+ 19	    	     	
+ 20	    	     	Done
+ 21	1010	3FFF		bra	Done
+ 22	    	     		end	Main
+
+Successful completion of assembly - 2P
+
+** Symbol table **
+
+Constants (Equates)
+Name                               	Type	Value	Decimal
+V2                                 	CON	0007	7	PRI
+V1                                 	CON	000A	10	PRI
+
+Labels (Code)
+Name                               	Type	Value	Decimal
+Done                               	REL	1010	4112	PRI
+Main                               	REL	1000	4096	PRI
+
+Labels (Data)
+Name                               	Type	Value	Decimal
+
+Registers
+Name                               	Type	Value	Decimal
+PC                                 	REG	0007	7	PRI
+LR                                 	REG	0005	5	PRI
+R7                                 	REG	0007	7	PRI
+R6                                 	REG	0006	6	PRI
+R5                                 	REG	0005	5	PRI
+R4                                 	REG	0004	4	PRI
+R3                                 	REG	0003	3	PRI
+R2                                 	REG	0002	2	PRI
+R1                                 	REG	0001	1	PRI
+R0                                 	REG	0000	0	PRI
+
+.XME file: C:\Users\nnade\OneDrive\Desktop\4th year Summer\System Architecture\Assignment\Assignment 5\Assignment 5 - Conditional execution\cextest2.xme
+
